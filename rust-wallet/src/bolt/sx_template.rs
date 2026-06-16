@@ -53,6 +53,14 @@ pub fn simple_multi_bolt() -> Artifact {
     Artifact::from_json(SIMPLE_MULTI_BOLT_JSON).expect("embedded SimpleMultiBolt artifact is valid")
 }
 
+/// The frozen MinSimpleDiscountBolt artifact - NFT + immutable 1-byte percent discount.
+pub const MIN_SIMPLE_DISCOUNT_BOLT_JSON: &str = include_str!("artifacts/MinSimpleDiscountBolt.json");
+
+pub fn min_simple_discount_bolt() -> Artifact {
+    Artifact::from_json(MIN_SIMPLE_DISCOUNT_BOLT_JSON)
+        .expect("embedded MinSimpleDiscountBolt artifact is valid")
+}
+
 /// Append a minimal-encoded data push (matches @bsv/sdk writeBin).
 pub fn push_data(out: &mut Vec<u8>, data: &[u8]) {
     let n = data.len();
@@ -60,18 +68,9 @@ pub fn push_data(out: &mut Vec<u8>, data: &[u8]) {
         out.push(0x00); // OP_0 (empty push)
         return;
     }
-    if n == 1 {
-        let b = data[0];
-        if (1..=16).contains(&b) {
-            out.push(0x50 + b); // OP_1 ..= OP_16
-            return;
-        }
-        if b == 0x81 {
-            out.push(0x4f); // OP_1NEGATE
-            return;
-        }
-        // otherwise a normal 1-byte direct push
-    }
+    // NB: the sx contract fill uses DIRECT length-prefixed pushes for data args,
+    // NOT minimal OP_N encoding (e.g. discount 0x0a is [0x01,0x0a], not OP_10).
+    // Empty is the one special case (0x00 == OP_0, identical to a 0-length push).
     if n <= 75 {
         out.push(n as u8);
     } else if n <= 0xff {
@@ -191,7 +190,7 @@ mod tests {
 
         let mut small = Vec::new();
         push_data(&mut small, &[0x05]);
-        assert_eq!(small, vec![0x55]); // OP_5
+        assert_eq!(small, vec![0x01, 0x05]); // DIRECT push (not minimal OP_5) - matches sx fill
 
         let mut p20 = Vec::new();
         push_data(&mut p20, &[0xaa; 20]);

@@ -6,6 +6,7 @@
 //! byte-match tests land in B-2..C-3.
 
 pub mod ctx;
+pub mod discount;
 pub mod lib;
 pub mod min_simple_bolt;
 pub mod mint;

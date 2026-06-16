@@ -1,0 +1,8946 @@
+{
+  "filename": "MinSimpleDiscountBolt.sx",
+  "lockArgs": [
+    "discount",
+    "pubKeyHash",
+    "pubKeyHashCommitment",
+    "txoType",
+    "parentOutpoint",
+    "grandparentOutpoint",
+    "issuerPubKey"
+  ],
+  "unlockArgs": [
+    "ancestorVer",
+    "ancestorVin1Outpoint",
+    "ancestorVin1FundOutpoint",
+    "ancestorVin1ChangeOutput",
+    "ancestorVin1BeneficiaryPubKeyHash",
+    "ancestorVin1Sig",
+    "ancestorVin1PubKey",
+    "ancestorVin1CTXHeader",
+    "ancestorVin1CTXScriptCodePubKeyHash",
+    "ancestorVin1CTXScriptCodePubKeyHashCommitment",
+    "ancestorVin1CTXScriptCodeTxoType",
+    "ancestorVin1CTXScriptCodeParentOutpoint",
+    "ancestorVin1CTXScriptCodeGrandparentOutpoint",
+    "ancestorVin1CTXFooter",
+    "ancestorVin1NSequence",
+    "ancestorVin2Outpoint",
+    "ancestorVin2Script",
+    "ancestorVin2NSequence",
+    "ancestorVout1PubKeyHash",
+    "ancestorVout1PubKeyHashCommitment",
+    "ancestorVout1TxoType",
+    "ancestorVout1ParentOutpoint",
+    "ancestorVout1GrandparentOutpoint",
+    "ancestorChangeValue",
+    "ancestorChangeScript",
+    "ancestorNLockTime",
+    "fundOutpoint",
+    "changeOutput",
+    "beneficiaryPubKeyHash",
+    "sig",
+    "pubKey",
+    "ctxHeader",
+    "ctxCodeLen",
+    "ctxCodeUnlockScriptCode",
+    "ctxCodeLockScriptCode",
+    "ctxFooter",
+    "ctxCodeLockLen"
+  ],
+  "lockOps": [
+    {
+      "type": 3,
+      "value": "discount",
+      "pos": 5125,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "discount"
+    },
+    {
+      "type": 3,
+      "value": "pubKeyHash",
+      "pos": 5135,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "pubKeyHash"
+    },
+    {
+      "type": 3,
+      "value": "pubKeyHashCommitment",
+      "pos": 5147,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "pubKeyHashCommitment"
+    },
+    {
+      "type": 3,
+      "value": "txoType",
+      "pos": 5169,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "txoType"
+    },
+    {
+      "type": 3,
+      "value": "parentOutpoint",
+      "pos": 5178,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "parentOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "grandparentOutpoint",
+      "pos": 5194,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "grandparentOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "issuerPubKey",
+      "pos": 5215,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "issuerPubKey"
+    },
+    {
+      "type": 1,
+      "value": "pickL",
+      "pos": 5332,
+      "asm": "OP_PICK",
+      "num": 121,
+      "isLabelBound": true,
+      "labelName": "parentOutpoint"
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 5338,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 1,
+      "value": "not",
+      "pos": 5346,
+      "asm": "OP_NOT",
+      "num": 145,
+      "label": "isGenesis"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5368,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "2swap",
+      "pos": 5373,
+      "asm": "OP_2SWAP",
+      "num": 114
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5380,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 5384,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5392,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146,
+      "label": "hasGrandparent"
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5421,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "not",
+      "pos": 5425,
+      "asm": "OP_NOT",
+      "num": 145,
+      "label": "noGrandparent"
+    },
+    {
+      "type": 5,
+      "value": "6n",
+      "pos": 5447,
+      "asm": "OP_6",
+      "num": "6"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 5450,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 5467,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 1,
+      "value": "boolAnd",
+      "pos": 5475,
+      "asm": "OP_BOOLAND",
+      "num": 154,
+      "label": "is2ndTx"
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 5571,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 5574,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "boolOr",
+      "pos": 5593,
+      "asm": "OP_BOOLOR",
+      "num": 155
+    },
+    {
+      "type": 1,
+      "value": "if",
+      "pos": 5600,
+      "asm": "OP_IF",
+      "num": 99
+    },
+    {
+      "type": 5,
+      "value": "3n",
+      "pos": 5608,
+      "asm": "OP_3",
+      "num": "3"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 5611,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "11n",
+      "pos": 5633,
+      "asm": "OP_11",
+      "num": "11"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 5637,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 5658,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 5671,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 5,
+      "value": "9n",
+      "pos": 5764,
+      "asm": "OP_9",
+      "num": "9"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 5767,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "ifDup",
+      "pos": 5788,
+      "asm": "OP_IFDUP",
+      "num": 115
+    },
+    {
+      "type": 1,
+      "value": "if",
+      "pos": 5795,
+      "asm": "OP_IF",
+      "num": 99
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5821,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 6,
+      "value": "41",
+      "pos": 5825,
+      "asm": "41",
+      "label": "sighashType"
+    },
+    {
+      "type": 1,
+      "value": "toAltStack",
+      "pos": 5843,
+      "asm": "OP_TOALTSTACK",
+      "num": 107
+    },
+    {
+      "type": 1,
+      "value": "hash256",
+      "pos": 5854,
+      "asm": "OP_HASH256",
+      "num": 170
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 5873,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5878,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5899,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5904,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "00",
+      "pos": 5912,
+      "asm": "00"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5915,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 5919,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 5,
+      "value": "1n",
+      "pos": 5927,
+      "asm": "OP_1",
+      "num": "1"
+    },
+    {
+      "type": 1,
+      "value": "add",
+      "pos": 5930,
+      "asm": "OP_ADD",
+      "num": 147
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 5945,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 5949,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 5959,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5980,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 5985,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 5993,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 5998,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 6003,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802",
+      "pos": 6007,
+      "asm": "022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 6078,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 6083,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 6087,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 6092,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 6097,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "30",
+      "pos": 6101,
+      "asm": "30"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 6104,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 6109,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "fromAltStack",
+      "pos": 6113,
+      "asm": "OP_FROMALTSTACK",
+      "num": 108
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 6126,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "038ff83d8cf12121491609c4939dc11c4aa35503508fe432dc5a5c1905608b9218",
+      "pos": 6130,
+      "asm": "038ff83d8cf12121491609c4939dc11c4aa35503508fe432dc5a5c1905608b9218"
+    },
+    {
+      "type": 1,
+      "value": "checkSigVerify",
+      "pos": 6197,
+      "asm": "OP_CHECKSIGVERIFY",
+      "num": 173,
+      "cs": 2
+    },
+    {
+      "type": 5,
+      "value": "4n",
+      "pos": 6249,
+      "asm": "OP_4",
+      "num": "4"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6252,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.txVersion"
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 6275,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6279,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.hashPrevouts"
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 6305,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6309,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.hashSequence"
+    },
+    {
+      "type": 5,
+      "value": "36n",
+      "pos": 6335,
+      "asm": "24",
+      "num": "36"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6339,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.outpoint"
+    },
+    {
+      "type": 5,
+      "value": "1n",
+      "pos": 6361,
+      "asm": "OP_1",
+      "num": "1"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6364,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "nip",
+      "pos": 6370,
+      "asm": "OP_NIP",
+      "num": 119
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 6374,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6377,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 6383,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "bin2Num",
+      "pos": 6388,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6396,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.scriptCode"
+    },
+    {
+      "type": 5,
+      "value": "8n",
+      "pos": 6420,
+      "asm": "OP_8",
+      "num": "8"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6423,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.value"
+    },
+    {
+      "type": 5,
+      "value": "4n",
+      "pos": 6442,
+      "asm": "OP_4",
+      "num": "4"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6445,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.nSequence"
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 6468,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6472,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "ctx.hashOutputs"
+    },
+    {
+      "type": 5,
+      "value": "4n",
+      "pos": 6497,
+      "asm": "OP_4",
+      "num": "4"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 6500,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "labels": [
+        "ctx.nLockTime",
+        "ctx.sigHash"
+      ],
+      "label": "ctx.nLockTime"
+    },
+    {
+      "type": 5,
+      "value": "1n",
+      "pos": 7032,
+      "asm": "OP_1",
+      "num": "1"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7035,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 7041,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 6,
+      "value": "41",
+      "pos": 7046,
+      "asm": "41"
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 7049,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 5,
+      "value": "9n",
+      "pos": 7087,
+      "asm": "OP_9",
+      "num": "9"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 7090,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 7118,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "greaterThanOrEqual",
+      "pos": 7121,
+      "asm": "OP_GREATERTHANOREQUAL",
+      "num": 162
+    },
+    {
+      "type": 1,
+      "value": "verify",
+      "pos": 7140,
+      "asm": "OP_VERIFY",
+      "num": 105
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 7180,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 7183,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 7258,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7261,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.discount"
+    },
+    {
+      "type": 5,
+      "value": "21n",
+      "pos": 7295,
+      "asm": "15",
+      "num": "21"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7299,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.pubKeyHash"
+    },
+    {
+      "type": 5,
+      "value": "21n",
+      "pos": 7335,
+      "asm": "15",
+      "num": "21"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7339,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.pubKeyHashCommitment"
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 7385,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7388,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.txoType"
+    },
+    {
+      "type": 5,
+      "value": "37n",
+      "pos": 7421,
+      "asm": "25",
+      "num": "37"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7425,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.parentOutpoint"
+    },
+    {
+      "type": 5,
+      "value": "37n",
+      "pos": 7465,
+      "asm": "25",
+      "num": "37"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7469,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.grandparentOutpoint"
+    },
+    {
+      "type": 5,
+      "value": "34n",
+      "pos": 7514,
+      "asm": "22",
+      "num": "34"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 7518,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "label": "scriptCode.issuerPubKey"
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 7556,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "toAltStack",
+      "pos": 7560,
+      "asm": "OP_TOALTSTACK",
+      "num": 107
+    },
+    {
+      "type": 5,
+      "value": "12n",
+      "pos": 7740,
+      "asm": "OP_12",
+      "num": "12"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 7744,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 7768,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 7772,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 5,
+      "value": "1n",
+      "pos": 7780,
+      "asm": "OP_1",
+      "num": "1"
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 7783,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 5,
+      "value": "23n",
+      "pos": 7856,
+      "asm": "17",
+      "num": "23"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 7860,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "notIf",
+      "pos": 7882,
+      "asm": "OP_NOTIF",
+      "num": 100
+    },
+    {
+      "type": 6,
+      "value": "1d02b0178876a914",
+      "pos": 7897,
+      "asm": "1d02b0178876a914"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 7914,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 5,
+      "value": "30n",
+      "pos": 7918,
+      "asm": "1e",
+      "num": "30"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 7922,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 7962,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "88ac",
+      "pos": 7966,
+      "asm": "88ac"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 7971,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "bolt"
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 7988,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 8234,
+      "asm": "14"
+    },
+    {
+      "type": 5,
+      "value": "24n",
+      "pos": 8237,
+      "asm": "18",
+      "num": "24"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8241,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "notIf",
+      "pos": 8263,
+      "asm": "OP_NOTIF",
+      "num": 100
+    },
+    {
+      "type": 5,
+      "value": "26n",
+      "pos": 8269,
+      "asm": "1a",
+      "num": "26"
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 8293,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 5,
+      "value": "25n",
+      "pos": 8298,
+      "asm": "19",
+      "num": "25"
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 8332,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8338,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8348,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 8390,
+      "asm": "14"
+    },
+    {
+      "type": 5,
+      "value": "25n",
+      "pos": 8393,
+      "asm": "19",
+      "num": "25"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8397,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "notIf",
+      "pos": 8419,
+      "asm": "OP_NOTIF",
+      "num": 100
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 8425,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8429,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 8465,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 5,
+      "value": "0n",
+      "pos": 8470,
+      "asm": "0",
+      "num": "0"
+    },
+    {
+      "type": 5,
+      "value": "20n",
+      "pos": 8473,
+      "asm": "14",
+      "num": "20"
+    },
+    {
+      "type": 1,
+      "value": "num2bin",
+      "pos": 8477,
+      "asm": "OP_NUM2BIN",
+      "num": 128
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 8485,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8491,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8495,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "24n",
+      "pos": 8547,
+      "asm": "18",
+      "num": "24"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8551,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "if",
+      "pos": 8573,
+      "asm": "OP_IF",
+      "num": 99
+    },
+    {
+      "type": 6,
+      "value": "0100",
+      "pos": 8576,
+      "asm": "0100"
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 8581,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 6,
+      "value": "0121",
+      "pos": 8586,
+      "asm": "0121"
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 8591,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8597,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 6,
+      "value": "24",
+      "pos": 8636,
+      "asm": "24"
+    },
+    {
+      "type": 5,
+      "value": "16n",
+      "pos": 8639,
+      "asm": "OP_16",
+      "num": "16"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8643,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8670,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8674,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 8720,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8723,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8763,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "23n",
+      "pos": 8816,
+      "asm": "17",
+      "num": "23"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8820,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "if",
+      "pos": 8844,
+      "asm": "OP_IF",
+      "num": 99
+    },
+    {
+      "type": 6,
+      "value": "21",
+      "pos": 8847,
+      "asm": "21"
+    },
+    {
+      "type": 5,
+      "value": "30n",
+      "pos": 8850,
+      "asm": "1e",
+      "num": "30"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8854,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8870,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 8879,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 5,
+      "value": "3n",
+      "pos": 8884,
+      "asm": "OP_3",
+      "num": "3"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8887,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 8925,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 8936,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "9n",
+      "pos": 8980,
+      "asm": "OP_9",
+      "num": "9"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 8983,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 9012,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 9017,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 9099,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9102,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 9126,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "tokenScriptCode"
+    },
+    {
+      "type": 6,
+      "value": "fd0005",
+      "pos": 9292,
+      "asm": "fd0005",
+      "label": "scriptLength"
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 9315,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "toAltStack",
+      "pos": 9319,
+      "asm": "OP_TOALTSTACK",
+      "num": 107
+    },
+    {
+      "type": 5,
+      "value": "15n",
+      "pos": 9335,
+      "asm": "OP_15",
+      "num": "15"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9339,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 9363,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 9368,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 9372,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 9377,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 5,
+      "value": "24n",
+      "pos": 9464,
+      "asm": "18",
+      "num": "24"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9468,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "notIf",
+      "pos": 9490,
+      "asm": "OP_NOTIF",
+      "num": 100
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 9538,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 9543,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "serialisedOutputs"
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 9573,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 1,
+      "value": "nip",
+      "pos": 9578,
+      "asm": "OP_NIP",
+      "num": 119
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 9587,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 5,
+      "value": "31n",
+      "pos": 9629,
+      "asm": "1f",
+      "num": "31"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9633,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 9660,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "serialisedOutputs"
+    },
+    {
+      "type": 1,
+      "value": "hash256",
+      "pos": 9791,
+      "asm": "OP_HASH256",
+      "num": 170
+    },
+    {
+      "type": 5,
+      "value": "11n",
+      "pos": 9804,
+      "asm": "OP_11",
+      "num": "11"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9808,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 9838,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 5,
+      "value": "13n",
+      "pos": 9941,
+      "asm": "OP_13",
+      "num": "13"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9945,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "23n",
+      "pos": 9972,
+      "asm": "17",
+      "num": "23"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 9976,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 9998,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 5,
+      "value": "19n",
+      "pos": 10006,
+      "asm": "13",
+      "num": "19"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10010,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "boolAnd",
+      "pos": 10039,
+      "asm": "OP_BOOLAND",
+      "num": 154,
+      "label": "rebuildAncestor"
+    },
+    {
+      "type": 1,
+      "value": "if",
+      "pos": 10071,
+      "asm": "OP_IF",
+      "num": 99
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 10144,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10148,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "44n",
+      "pos": 10178,
+      "asm": "2c",
+      "num": "44"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10182,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "drop",
+      "pos": 10221,
+      "asm": "OP_DROP",
+      "num": 117
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 10226,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10229,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 10259,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10263,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10302,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "0n",
+      "pos": 10403,
+      "asm": "0",
+      "num": "0"
+    },
+    {
+      "type": 5,
+      "value": "26n",
+      "pos": 10406,
+      "asm": "1a",
+      "num": "26"
+    },
+    {
+      "type": 1,
+      "value": "num2bin",
+      "pos": 10410,
+      "asm": "OP_NUM2BIN",
+      "num": 128,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 10484,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10488,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "24",
+      "pos": 10531,
+      "asm": "24"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 10534,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10539,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10543,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "57n",
+      "pos": 10572,
+      "asm": "39",
+      "num": "57"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10576,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "22",
+      "pos": 10619,
+      "asm": "22"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 10622,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10627,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10631,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "56n",
+      "pos": 10660,
+      "asm": "38",
+      "num": "56"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10664,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 10716,
+      "asm": "14"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 10719,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10724,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10728,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "55n",
+      "pos": 10757,
+      "asm": "37",
+      "num": "55"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10761,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 10795,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 10800,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10805,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10809,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "54n",
+      "pos": 10838,
+      "asm": "36",
+      "num": "54"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10842,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "21",
+      "pos": 10879,
+      "asm": "21"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 10882,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10887,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 10891,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "53n",
+      "pos": 10970,
+      "asm": "35",
+      "num": "53"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 10974,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "4c68",
+      "pos": 11014,
+      "asm": "4c68"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11019,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11024,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 5,
+      "value": "53n",
+      "pos": 11037,
+      "asm": "35",
+      "num": "53"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11041,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 11095,
+      "asm": "14"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11098,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11103,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "53n",
+      "pos": 11145,
+      "asm": "35",
+      "num": "53"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11149,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 11213,
+      "asm": "14"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11216,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11221,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11225,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "52n",
+      "pos": 11267,
+      "asm": "34",
+      "num": "52"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11271,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "01",
+      "pos": 11322,
+      "asm": "01"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11325,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11330,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11334,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "51n",
+      "pos": 11376,
+      "asm": "33",
+      "num": "51"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11380,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "24",
+      "pos": 11438,
+      "asm": "24"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11441,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11446,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11450,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "50n",
+      "pos": 11492,
+      "asm": "32",
+      "num": "50"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11496,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "24",
+      "pos": 11559,
+      "asm": "24"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11562,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11567,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11571,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "6n",
+      "pos": 11613,
+      "asm": "OP_6",
+      "num": "6"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11616,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11658,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "12n",
+      "pos": 11700,
+      "asm": "OP_12",
+      "num": "12"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11704,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 11733,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11738,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1CtxScriptCode"
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 11817,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 11820,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 11853,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ctxCodeLockScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 12004,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 6,
+      "value": "ad68",
+      "pos": 12017,
+      "asm": "ad68",
+      "label": "ctxCodeUnlockScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 12058,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "rot",
+      "pos": 12062,
+      "asm": "OP_ROT",
+      "num": 123
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12066,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ctxCode"
+    },
+    {
+      "type": 1,
+      "value": "drop",
+      "pos": 12090,
+      "asm": "OP_DROP",
+      "num": 117
+    },
+    {
+      "type": 6,
+      "value": "03fd0205",
+      "pos": 12095,
+      "asm": "03fd0205",
+      "label": "ctxCodeLen"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 12127,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 6,
+      "value": "02",
+      "pos": 12132,
+      "asm": "02"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 12135,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12140,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ctxCodeUnlockScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12180,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ctxCodeLen_ctxCodeUnlockScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 12231,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 6,
+      "value": "fd0005",
+      "pos": 12236,
+      "asm": "fd0005"
+    },
+    {
+      "type": 6,
+      "value": "03",
+      "pos": 12243,
+      "asm": "03"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 12246,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12251,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ctxCodeLockLen"
+    },
+    {
+      "type": 1,
+      "value": "toAltStack",
+      "pos": 12282,
+      "asm": "OP_TOALTSTACK",
+      "num": 107
+    },
+    {
+      "type": 6,
+      "value": "4d0005",
+      "pos": 12302,
+      "asm": "4d0005"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 12309,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12314,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ctxCodeLockScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12376,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12380,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12384,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 5,
+      "value": "47n",
+      "pos": 12415,
+      "asm": "2f",
+      "num": "47"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 12419,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "34",
+      "pos": 12459,
+      "asm": "34"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 12462,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12467,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12471,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 1,
+      "value": "fromAltStack",
+      "pos": 12500,
+      "asm": "OP_FROMALTSTACK",
+      "num": 108
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 12513,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 6,
+      "value": "5579557a557a557955797e7e7e7e547a527a547a547a7e7e7e7c73630141",
+      "pos": 12967,
+      "asm": "5579557a557a557955797e7e7e7e547a527a547a547a7e7e7e7c73630141",
+      "label": "unlockingScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13060,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 1,
+      "value": "fromAltStack",
+      "pos": 13089,
+      "asm": "OP_FROMALTSTACK",
+      "num": 108
+    },
+    {
+      "type": 1,
+      "value": "fromAltStack",
+      "pos": 13102,
+      "asm": "OP_FROMALTSTACK",
+      "num": 108
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 13124,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "toAltStack",
+      "pos": 13138,
+      "asm": "OP_TOALTSTACK",
+      "num": 107
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 13571,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 13575,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "nip",
+      "pos": 13590,
+      "asm": "OP_NIP",
+      "num": 119
+    },
+    {
+      "type": 5,
+      "value": "381n",
+      "pos": 13603,
+      "asm": "7d01",
+      "num": "381"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 13608,
+      "asm": "OP_SPLIT",
+      "num": 127,
+      "labels": [
+        "verCtxScriptCode1",
+        "verCtxScriptCode2"
+      ],
+      "label": "verCtxScriptCode1"
+    },
+    {
+      "type": 1,
+      "value": "drop",
+      "pos": 13662,
+      "asm": "OP_DROP",
+      "num": 117
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13676,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "abad68",
+      "pos": 13680,
+      "asm": "abad68",
+      "label": "footerScriptCode"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13716,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "ancestorVin1"
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 13824,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 13829,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "num2bin",
+      "pos": 13832,
+      "asm": "OP_NUM2BIN",
+      "num": 128
+    },
+    {
+      "type": 6,
+      "value": "fd",
+      "pos": 13840,
+      "asm": "fd"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 13843,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13848,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 13852,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13857,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13861,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "45n",
+      "pos": 13893,
+      "asm": "2d",
+      "num": "45"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 13897,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 13937,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "44n",
+      "pos": 14000,
+      "asm": "2c",
+      "num": "44"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14004,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14034,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "43n",
+      "pos": 14064,
+      "asm": "2b",
+      "num": "43"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14068,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 14096,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 14101,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14106,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14110,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "42n",
+      "pos": 14140,
+      "asm": "2a",
+      "num": "42"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14144,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14175,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "3n",
+      "pos": 14235,
+      "asm": "OP_3",
+      "num": "3"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14238,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "14n",
+      "pos": 14268,
+      "asm": "OP_14",
+      "num": "14"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14272,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14291,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 1,
+      "value": "fromAltStack",
+      "pos": 14382,
+      "asm": "OP_FROMALTSTACK",
+      "num": 108
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14409,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "9n",
+      "pos": 14439,
+      "asm": "OP_9",
+      "num": "9"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14442,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14471,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "41n",
+      "pos": 14538,
+      "asm": "29",
+      "num": "41"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14542,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 14584,
+      "asm": "14"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 14587,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14592,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14596,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "40n",
+      "pos": 14626,
+      "asm": "28",
+      "num": "40"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14630,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "14",
+      "pos": 14682,
+      "asm": "14"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 14685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14694,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "39n",
+      "pos": 14724,
+      "asm": "27",
+      "num": "39"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14728,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "01",
+      "pos": 14767,
+      "asm": "01"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 14770,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14775,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14779,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "38n",
+      "pos": 14809,
+      "asm": "26",
+      "num": "38"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14813,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "24",
+      "pos": 14859,
+      "asm": "24"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 14862,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14867,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14871,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "37n",
+      "pos": 14901,
+      "asm": "25",
+      "num": "37"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 14905,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "24",
+      "pos": 14956,
+      "asm": "24"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 14959,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14964,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 14968,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "3n",
+      "pos": 14998,
+      "asm": "OP_3",
+      "num": "3"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15001,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15043,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 15073,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15076,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15109,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "14n",
+      "pos": 15165,
+      "asm": "OP_14",
+      "num": "14"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15169,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15188,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 6,
+      "value": "1d02b0178876a914",
+      "pos": 15218,
+      "asm": "1d02b0178876a914"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15235,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 5,
+      "value": "26n",
+      "pos": 15239,
+      "asm": "1a",
+      "num": "26"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15243,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15272,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "88ac",
+      "pos": 15276,
+      "asm": "88ac"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15281,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "36n",
+      "pos": 15311,
+      "asm": "24",
+      "num": "36"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15315,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15344,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "35n",
+      "pos": 15374,
+      "asm": "23",
+      "num": "35"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15378,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 6,
+      "value": "19",
+      "pos": 15408,
+      "asm": "19"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 15411,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15416,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15420,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 5,
+      "value": "34n",
+      "pos": 15450,
+      "asm": "22",
+      "num": "34"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15454,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15481,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentTx"
+    },
+    {
+      "type": 1,
+      "value": "hash256",
+      "pos": 15577,
+      "asm": "OP_HASH256",
+      "num": 170,
+      "label": "grandparentTxid"
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 15613,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 5,
+      "value": "21n",
+      "pos": 15626,
+      "asm": "15",
+      "num": "21"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15630,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 15668,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 15672,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "drop",
+      "pos": 15678,
+      "asm": "OP_DROP",
+      "num": 117
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 15683,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 6,
+      "value": "01000000",
+      "pos": 15704,
+      "asm": "01000000"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15713,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "grandparentOutpoint"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15740,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "outpoints"
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 15762,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "58n",
+      "pos": 15852,
+      "asm": "3a",
+      "num": "58"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 15856,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 15910,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 15918,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "nip",
+      "pos": 15923,
+      "asm": "OP_NIP",
+      "num": 119
+    },
+    {
+      "type": 5,
+      "value": "0n",
+      "pos": 15927,
+      "asm": "0",
+      "num": "0"
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 15930,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 15947,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 5,
+      "value": "32n",
+      "pos": 16091,
+      "asm": "20",
+      "num": "32"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16095,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 16122,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "prevOuts"
+    },
+    {
+      "type": 1,
+      "value": "hash256",
+      "pos": 16185,
+      "asm": "OP_HASH256",
+      "num": 170
+    },
+    {
+      "type": 5,
+      "value": "16n",
+      "pos": 16193,
+      "asm": "OP_16",
+      "num": "16"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16197,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 16228,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 5,
+      "value": "28n",
+      "pos": 16245,
+      "asm": "1c",
+      "num": "28"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16249,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 16267,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 16271,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "1sub",
+      "pos": 16276,
+      "asm": "OP_1SUB",
+      "num": 140
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 16281,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "nip",
+      "pos": 16287,
+      "asm": "OP_NIP",
+      "num": 119
+    },
+    {
+      "type": 6,
+      "value": "41",
+      "pos": 16291,
+      "asm": "41"
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 16294,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 5,
+      "value": "28n",
+      "pos": 16334,
+      "asm": "1c",
+      "num": "28"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16338,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 16359,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "hash160",
+      "pos": 16363,
+      "asm": "OP_HASH160",
+      "num": 169
+    },
+    {
+      "type": 5,
+      "value": "27n",
+      "pos": 16371,
+      "asm": "1b",
+      "num": "27"
+    },
+    {
+      "type": 1,
+      "value": "else",
+      "pos": 16376,
+      "asm": "OP_ELSE",
+      "num": 103
+    },
+    {
+      "type": 5,
+      "value": "11n",
+      "pos": 16649,
+      "asm": "OP_11",
+      "num": "11"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16653,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 16666,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 16670,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "1sub",
+      "pos": 16675,
+      "asm": "OP_1SUB",
+      "num": 140
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 16680,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "nip",
+      "pos": 16686,
+      "asm": "OP_NIP",
+      "num": 119
+    },
+    {
+      "type": 6,
+      "value": "41",
+      "pos": 16690,
+      "asm": "41"
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 16693,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 5,
+      "value": "11n",
+      "pos": 16757,
+      "asm": "OP_11",
+      "num": "11"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16761,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 16777,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "hash160",
+      "pos": 16781,
+      "asm": "OP_HASH160",
+      "num": 169
+    },
+    {
+      "type": 5,
+      "value": "10n",
+      "pos": 16789,
+      "asm": "OP_10",
+      "num": "10"
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 16794,
+      "asm": "OP_ENDIF",
+      "num": 104
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 16801,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "equalVerify",
+      "pos": 16822,
+      "asm": "OP_EQUALVERIFY",
+      "num": 136
+    },
+    {
+      "type": 1,
+      "value": "checkSig",
+      "pos": 16834,
+      "asm": "OP_CHECKSIG",
+      "num": 172
+    }
+  ],
+  "unlockOps": [
+    {
+      "type": 3,
+      "value": "ancestorVer",
+      "pos": 2850,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVer"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1Outpoint",
+      "pos": 2864,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1Outpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1FundOutpoint",
+      "pos": 2887,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1FundOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1ChangeOutput",
+      "pos": 2914,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1ChangeOutput"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1BeneficiaryPubKeyHash",
+      "pos": 2941,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1BeneficiaryPubKeyHash"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1Sig",
+      "pos": 2977,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1Sig"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1PubKey",
+      "pos": 2995,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1PubKey"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXHeader",
+      "pos": 3016,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXHeader"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXScriptCodePubKeyHash",
+      "pos": 3053,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXScriptCodePubKeyHash"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXScriptCodePubKeyHashCommitment",
+      "pos": 3091,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXScriptCodePubKeyHashCommitment"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXScriptCodeTxoType",
+      "pos": 3139,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXScriptCodeTxoType"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXScriptCodeParentOutpoint",
+      "pos": 3174,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXScriptCodeParentOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXScriptCodeGrandparentOutpoint",
+      "pos": 3216,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXScriptCodeGrandparentOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1CTXFooter",
+      "pos": 3263,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1CTXFooter"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin1NSequence",
+      "pos": 3299,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin1NSequence"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin2Outpoint",
+      "pos": 3323,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin2Outpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin2Script",
+      "pos": 3346,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin2Script"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVin2NSequence",
+      "pos": 3391,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVin2NSequence"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVout1PubKeyHash",
+      "pos": 3415,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVout1PubKeyHash"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVout1PubKeyHashCommitment",
+      "pos": 3441,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVout1PubKeyHashCommitment"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVout1TxoType",
+      "pos": 3477,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVout1TxoType"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVout1ParentOutpoint",
+      "pos": 3500,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVout1ParentOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorVout1GrandparentOutpoint",
+      "pos": 3530,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorVout1GrandparentOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "ancestorChangeValue",
+      "pos": 3565,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorChangeValue"
+    },
+    {
+      "type": 3,
+      "value": "ancestorChangeScript",
+      "pos": 3587,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorChangeScript"
+    },
+    {
+      "type": 3,
+      "value": "ancestorNLockTime",
+      "pos": 3610,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ancestorNLockTime"
+    },
+    {
+      "type": 3,
+      "value": "fundOutpoint",
+      "pos": 3668,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "fundOutpoint"
+    },
+    {
+      "type": 3,
+      "value": "changeOutput",
+      "pos": 3683,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "changeOutput"
+    },
+    {
+      "type": 3,
+      "value": "beneficiaryPubKeyHash",
+      "pos": 3698,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "beneficiaryPubKeyHash"
+    },
+    {
+      "type": 3,
+      "value": "sig",
+      "pos": 3722,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "sig",
+      "cs": 2
+    },
+    {
+      "type": 3,
+      "value": "pubKey",
+      "pos": 3774,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "pubKey"
+    },
+    {
+      "type": 3,
+      "value": "ctxHeader",
+      "pos": 3783,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ctxHeader"
+    },
+    {
+      "type": 3,
+      "value": "ctxCodeLen",
+      "pos": 3809,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ctxCodeLen"
+    },
+    {
+      "type": 3,
+      "value": "ctxCodeUnlockScriptCode",
+      "pos": 3869,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ctxCodeUnlockScriptCode"
+    },
+    {
+      "type": 3,
+      "value": "ctxCodeLockScriptCode",
+      "pos": 3930,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ctxCodeLockScriptCode"
+    },
+    {
+      "type": 3,
+      "value": "ctxFooter",
+      "pos": 3997,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ctxFooter"
+    },
+    {
+      "type": 3,
+      "value": "ctxCodeLockLen",
+      "pos": 4022,
+      "asm": "OP_0",
+      "optional": false,
+      "label": "ctxCodeLockLen"
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 4186,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 4189,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 4209,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 4212,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 4233,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 4236,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 4270,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 4273,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 5,
+      "value": "5n",
+      "pos": 4305,
+      "asm": "OP_5",
+      "num": "5"
+    },
+    {
+      "type": 1,
+      "value": "pick",
+      "pos": 4308,
+      "asm": "OP_PICK",
+      "num": 121
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4328,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4332,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4336,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4340,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "fullCtx"
+    },
+    {
+      "type": 5,
+      "value": "4n",
+      "pos": 4386,
+      "asm": "OP_4",
+      "num": "4"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 4389,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 5,
+      "value": "2n",
+      "pos": 4409,
+      "asm": "OP_2",
+      "num": "2"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 4412,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 5,
+      "value": "4n",
+      "pos": 4437,
+      "asm": "OP_4",
+      "num": "4"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 4440,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 5,
+      "value": "4n",
+      "pos": 4472,
+      "asm": "OP_4",
+      "num": "4"
+    },
+    {
+      "type": 1,
+      "value": "roll",
+      "pos": 4475,
+      "asm": "OP_ROLL",
+      "num": 122
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4495,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4499,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4503,
+      "asm": "OP_CAT",
+      "num": 126,
+      "label": "lockingCtx"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4543,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "ifDup",
+      "pos": 4549,
+      "asm": "OP_IFDUP",
+      "num": 115
+    },
+    {
+      "type": 1,
+      "value": "if",
+      "pos": 4599,
+      "asm": "OP_IF",
+      "num": 99
+    },
+    {
+      "type": 6,
+      "value": "41",
+      "pos": 4602,
+      "asm": "41",
+      "label": "sighashType"
+    },
+    {
+      "type": 1,
+      "value": "toAltStack",
+      "pos": 4629,
+      "asm": "OP_TOALTSTACK",
+      "num": 107
+    },
+    {
+      "type": 1,
+      "value": "hash256",
+      "pos": 4640,
+      "asm": "OP_HASH256",
+      "num": 170
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "true",
+      "pos": 4659,
+      "asm": "OP_TRUE",
+      "num": 81
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4664,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4685,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4690,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "00",
+      "pos": 4698,
+      "asm": "00"
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4701,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "bin2num",
+      "pos": 4705,
+      "asm": "OP_BIN2NUM",
+      "num": 129
+    },
+    {
+      "type": 5,
+      "value": "1n",
+      "pos": 4713,
+      "asm": "OP_1",
+      "num": "1"
+    },
+    {
+      "type": 1,
+      "value": "add",
+      "pos": 4716,
+      "asm": "OP_ADD",
+      "num": 147
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "dup",
+      "pos": 4731,
+      "asm": "OP_DUP",
+      "num": 118
+    },
+    {
+      "type": 1,
+      "value": "0notEqual",
+      "pos": 4735,
+      "asm": "OP_0NOTEQUAL",
+      "num": 146
+    },
+    {
+      "type": 1,
+      "value": "split",
+      "pos": 4745,
+      "asm": "OP_SPLIT",
+      "num": 127
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4766,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4771,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 4779,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4784,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4789,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802",
+      "pos": 4793,
+      "asm": "022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f8179802"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4864,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4869,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "size",
+      "pos": 4873,
+      "asm": "OP_SIZE",
+      "num": 130
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4878,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4883,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "30",
+      "pos": 4887,
+      "asm": "30"
+    },
+    {
+      "type": 1,
+      "value": "swap",
+      "pos": 4890,
+      "asm": "OP_SWAP",
+      "num": 124
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4895,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 1,
+      "value": "fromAltStack",
+      "pos": 4899,
+      "asm": "OP_FROMALTSTACK",
+      "num": 108
+    },
+    {
+      "type": 1,
+      "value": "cat",
+      "pos": 4912,
+      "asm": "OP_CAT",
+      "num": 126
+    },
+    {
+      "type": 6,
+      "value": "038ff83d8cf12121491609c4939dc11c4aa35503508fe432dc5a5c1905608b9218",
+      "pos": 4916,
+      "asm": "038ff83d8cf12121491609c4939dc11c4aa35503508fe432dc5a5c1905608b9218"
+    },
+    {
+      "type": 1,
+      "value": "codeSeparator",
+      "pos": 4983,
+      "asm": "OP_CODESEPARATOR",
+      "num": 171
+    },
+    {
+      "type": 1,
+      "value": "checkSigVerify",
+      "pos": 5005,
+      "asm": "OP_CHECKSIGVERIFY",
+      "num": 173
+    },
+    {
+      "type": 1,
+      "value": "endIf",
+      "pos": 5021,
+      "asm": "OP_ENDIF",
+      "num": 104
+    }
+  ],
+  "lockingRecombinants": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    "527981917c7276819276915679819a55799b6353795b798868597973637601416baa517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e01007e81519376927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e827c7e23022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798027c7e827c7e01307c7e6c7e21038ff83d8cf12121491609c4939dc11c4aa35503508fe432dc5a5c1905608b9218ad547f01207f01207f01247f517f77527f7c817f587f547f01207f547f517f7c014188597952a269557a527f01157f01157f527f01257f01257f01227f766b5c797681518801177964081d02b0178876a9147e011e797e0288ac7e68011401187964011a67011968797e0114011979640120796700011480687e7e0118796302010067020121687e012460797e7e55797e011779630121011e797e675379687e59797c7e52797e03fd0005766b5f797c7e7c7e011879647c7e677768011f797eaa5b79885d79011779810113799a63013a79012c7975527e013a797e00011a80013a7901247c7e7e01397901227c7e7e01387901147c7e7e013779827c7e7e01367901217c7e7e013579024c687c7e01357901147c7e01357901147c7e7e01347901017c7e7e01337901247c7e7e01327901247c7e7e56797e5c797c7e55797e7602ad68767b7e750403fd02057c01027c7e7e7c03fd000501037c7e6b034d00057c7e7e7e7e012f7901347c7e7e6c7e1e5579557a557a557955797e7e7e7e547a527a547a547a7e7e7e7c736301417e6c6c7c6b01207f77027d017f757e03abad687e82528001fd7c7e7c7e7e012d797e012c797e012b79827c7e7e012a797e537e5e797e6c7e59797e01297901147c7e7e01287901147c7e7e01277901017c7e7e01267901247c7e7e01257901247c7e7e53797e52797e5e797e081d02b0178876a9147e011a797e0288ac7e0124797e01237901197c7e7e0122797eaa7601157901207f758804010000007e7e67013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a79013a797e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e7e82770088680120797eaa607988011c7976828c7f77014188011c7976a9011b675b7976828c7f770141885b7976a95a687988ac"
+  ],
+  "unlockingRecombinants": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    35,
+    36,
+    "5579557a557a557955797e7e7e7e547a527a547a547a7e7e7e7c736301416baa517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f517f7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e01007e81519376927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f76927f7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e7c7e827c7e23022079be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798027c7e827c7e01307c7e6c7e21038ff83d8cf12121491609c4939dc11c4aa35503508fe432dc5a5c1905608b9218abad68"
+  ]
+}
