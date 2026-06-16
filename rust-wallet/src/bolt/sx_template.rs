@@ -19,6 +19,10 @@ pub struct Artifact {
     pub filename: String,
     pub lock_args: Vec<String>,
     pub locking_recombinants: Vec<Value>,
+    #[serde(default)]
+    pub unlock_args: Vec<String>,
+    #[serde(default)]
+    pub unlocking_recombinants: Vec<Value>,
 }
 
 impl Artifact {
@@ -68,13 +72,14 @@ pub fn push_data(out: &mut Vec<u8>, data: &[u8]) {
     out.extend_from_slice(data);
 }
 
-/// Fill an artifact's locking recombinants with the given arg values (by name).
-pub fn fill_locking_script(
-    art: &Artifact,
+/// Core fill: walk recombinants (string -> raw bytes, number -> push arg_names[idx]).
+pub fn fill_script(
+    recombinants: &[Value],
+    arg_names: &[String],
     args: &HashMap<String, Vec<u8>>,
 ) -> Result<Vec<u8>, String> {
     let mut out = Vec::new();
-    for part in &art.locking_recombinants {
+    for part in recombinants {
         match part {
             Value::String(hex_lit) => {
                 let bytes = hex::decode(hex_lit)
@@ -86,13 +91,12 @@ pub fn fill_locking_script(
                     .as_u64()
                     .ok_or_else(|| format!("recombinant arg index not a uint: {num}"))?
                     as usize;
-                let name = art
-                    .lock_args
+                let name = arg_names
                     .get(idx)
                     .ok_or_else(|| format!("recombinant arg index {idx} out of range"))?;
                 let val = args
                     .get(name)
-                    .ok_or_else(|| format!("missing value for lockArg '{name}'"))?;
+                    .ok_or_else(|| format!("missing value for arg '{name}'"))?;
                 push_data(&mut out, val);
             }
             other => {
@@ -103,6 +107,22 @@ pub fn fill_locking_script(
         }
     }
     Ok(out)
+}
+
+/// Fill an artifact's locking recombinants with the given lockArg values (by name).
+pub fn fill_locking_script(
+    art: &Artifact,
+    args: &HashMap<String, Vec<u8>>,
+) -> Result<Vec<u8>, String> {
+    fill_script(&art.locking_recombinants, &art.lock_args, args)
+}
+
+/// Fill an artifact's unlocking recombinants with the given unlockArg values (by name).
+pub fn fill_unlocking_script(
+    art: &Artifact,
+    args: &HashMap<String, Vec<u8>>,
+) -> Result<Vec<u8>, String> {
+    fill_script(&art.unlocking_recombinants, &art.unlock_args, args)
 }
 
 #[cfg(test)]
@@ -139,6 +159,8 @@ mod tests {
         assert_eq!(art.filename, "MinSimpleBolt.sx");
         assert_eq!(art.lock_args.len(), 6);
         assert_eq!(art.locking_recombinants.len(), 7);
+        assert_eq!(art.unlock_args.len(), 37);
+        assert_eq!(art.unlocking_recombinants.len(), 38);
     }
 
     /// B-0 golden: the Rust filler reproduces the @bsv/sdk-built lock script

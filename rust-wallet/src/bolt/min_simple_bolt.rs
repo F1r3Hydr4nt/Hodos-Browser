@@ -25,8 +25,18 @@ pub fn mint_lock_args(owner_pubkey: &[u8]) -> HashMap<String, Vec<u8>> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::bolt::sx_template::{fill_locking_script, min_simple_bolt};
+    use crate::bolt::sx_template::{fill_locking_script, fill_unlocking_script, min_simple_bolt};
     use serde_json::Value;
+
+    fn args_map_from_fixture(args_obj: &serde_json::Map<String, Value>) -> HashMap<String, Vec<u8>> {
+        let mut m = HashMap::new();
+        for (k, v) in args_obj {
+            let hexs = v.as_str().unwrap();
+            let bytes = if hexs.is_empty() { Vec::new() } else { hex::decode(hexs).unwrap() };
+            m.insert(k.clone(), bytes);
+        }
+        m
+    }
 
     /// B-2 mint-lock golden: deriving the genesis args from the owner pubkey and
     /// filling reproduces the SxSimulator's tx0 bolt output lock byte-for-byte.
@@ -44,5 +54,28 @@ mod tests {
         let expected = fx["txs"][0]["outs"][0]["lockHex"].as_str().unwrap();
 
         assert_eq!(hex::encode(&lock), expected, "MinSimpleBolt mint lock mismatch vs fixture tx0");
+    }
+
+    /// B-2-unlock assembly: given the 37 unlockArg values, the generalized filler
+    /// reproduces the tx1 bolt-input unlock script (2078 B) byte-for-byte. This
+    /// proves the unlock uses the same fill model as the lock; the remaining work
+    /// is DERIVING the 37 values (ancestor reconstruction), tracked separately.
+    #[test]
+    fn transfer_unlock_assembly_matches_fixture() {
+        const UNLOCK: &str = include_str!("../../tests/fixtures/minsimplebolt_unlock_tx1.json");
+        let fx: Value = serde_json::from_str(UNLOCK).unwrap();
+        let expected = fx["unlockHex"].as_str().unwrap();
+        let args = args_map_from_fixture(fx["args"].as_object().unwrap());
+
+        // independent partial-derivation checks
+        assert_eq!(
+            hex::encode(args.get("pubKey").unwrap()),
+            "035f9b0b33eb636964205e77e71b5243552c2e4665be1e7ef1b6925211fd1bc0f7",
+            "spend pubKey should be the owner key"
+        );
+        assert_eq!(args.get("beneficiaryPubKeyHash").unwrap().len(), 20);
+
+        let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("unlock fill");
+        assert_eq!(hex::encode(&built), expected, "tx1 unlock assembly mismatch");
     }
 }
