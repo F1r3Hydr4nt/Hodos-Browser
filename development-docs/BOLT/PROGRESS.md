@@ -33,7 +33,7 @@ Drive Layers A to F to green (Layer G app tests are OUT OF SCOPE - apps do not e
 - [ ] D-5 self-track outputs + POST /wallet/import-funding - test [D-4]
 
 ### Track B - Contract engine
-- [ ] Aprime-1 artifactExport.test.js freezes the 7 compiled production artifacts to rust-wallet/src/bolt/artifacts/*.json (gated by productionStd.equiv/productionDrift) [priv-chain repo]
+- [x] Aprime-1 artifactExport.test.js freezes the 7 compiled production artifacts to **sx/bolt/production/artifacts/*.json** (drift-gated by recompilation; LF-pinned). DONE priv-chain `22c8260`. NOTE: emitted in priv-chain (co-located, single-repo) not rust-wallet; B-0 copies/embeds them into rust-wallet. Each artifact has filename/lockArgs/unlockArgs/lockOps/unlockOps/locking+unlockingRecombinants (lockOps present, e.g. MinSimpleBolt lockOps[855]/unlockOps[380]).
 - [ ] B-0 sx_template.rs filler + lib.rs boltLib helpers; MinSimpleBolt lock-script golden match [Aprime-1]
 - [ ] B-1 emit-golden.mjs emits lifecycle fixtures for MinSimpleBolt, MSBBolt, SimpleMultiBolt, Discount [Aprime-1, priv-chain repo]
 - [ ] B-2 MinSimpleBolt mint/transfer/melt - golden byte-match [B-0,B-1]
@@ -56,3 +56,4 @@ Every box ticked AND suites A, A', B, C, D, E, F green AND no Layer-G artifact c
 
 ## Log
 - 2026-06-16 env bring-up complete (rustup + Windows SDK + vsenv shims); branched bolt-integration in both repos; PROGRESS seeded.
+- 2026-06-16 Aprime-1 GREEN (7/7): production artifacts frozen + LF-pinned in priv-chain (`22c8260`). Next eligible: D-1 (Track A) or B-0 (needs Aprime-1, embeds artifacts into rust-wallet).
