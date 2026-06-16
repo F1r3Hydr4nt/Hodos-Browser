@@ -9,6 +9,7 @@
 //! D-1 scope: the enum + config resolution + capability flags. The concrete
 //! Broadcaster/ProofSource/HeaderSource impls land in D-2/D-3.
 
+pub mod arcade;
 pub mod node;
 
 /// Hosted Arcade base URLs (no trailing slash; routes are e.g. `/tx`).
