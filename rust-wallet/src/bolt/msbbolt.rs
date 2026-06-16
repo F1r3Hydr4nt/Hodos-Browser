@@ -27,7 +27,7 @@ pub fn mint_lock_args(owner_pubkey: &[u8], balance: &[u8]) -> HashMap<String, Ve
 mod tests {
     use super::*;
     use crate::bolt::ctx::{ctx_footer, ctx_header, hash_outputs, hash_prevouts, hash_sequence};
-    use crate::bolt::min_simple_bolt::simple_spend_unlock_args;
+    use crate::bolt::min_simple_bolt::{melt_unlock_args, simple_spend_unlock_args};
     use crate::bolt::sx_template::{fill_locking_script, fill_unlocking_script, min_simple_balance_bolt};
     use serde_json::Value;
 
@@ -89,5 +89,16 @@ mod tests {
         );
         let built = fill_unlocking_script(&min_simple_balance_bolt(), &args).expect("fill");
         assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "MSBBolt tx1 transfer unlock mismatch");
+    }
+
+    /// B-3 melt: reuses melt_unlock_args (only sig+pubKey) + the MSBBolt artifact.
+    #[test]
+    fn melt_unlock_matches_fixture() {
+        const TX5: &str = include_str!("../../tests/fixtures/msbbolt_spend_tx5.json");
+        let fx: Value = serde_json::from_str(TX5).unwrap();
+        let ua = fx["args"].as_object().unwrap();
+        let args = melt_unlock_args(&dehex(&ua["pubKey"]), &dehex(&ua["sig"]));
+        let built = fill_unlocking_script(&min_simple_balance_bolt(), &args).expect("fill");
+        assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "MSBBolt melt unlock mismatch");
     }
 }
