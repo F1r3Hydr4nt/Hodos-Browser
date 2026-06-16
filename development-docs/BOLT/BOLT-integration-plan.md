@@ -36,6 +36,18 @@ The sibling `priv-chain` repo contains a working **BOLT** token protocol: a TS S
 
 The **Playwright E2E** that walks B1→B7 across the four sites is the top-level acceptance test.
 
+> **Status (apps not yet built).** The four demo sites (catpicz/bwanq/tackle/bucket) and their issuer backends do **not exist yet** — they are an external dependency. The narrative above is the *target* spec, not current work. Everything that does **not** require the real sites proceeds now (Phases 0–5) and is fully testable without them; the site-dependent work (Phases 6–7) is **deferred until the apps exist**. See "Sequencing" below.
+
+---
+
+## Sequencing given the demo apps aren't ready
+
+**Do now (no app dependency):** Phase 0 (ChainBackend/Arcade) → Phase 1 (sx engine + golden harness) → Phases 2–4 (MSBBolt, SimpleMultiBolt, MinSimpleDiscountBolt ports) → Phase 5 (provider API + UI), validated against a **local stub dApp page** rather than the real sites.
+
+**Deferred until apps exist:** Phase 6 (the four real sites + Node issuer backends) and Phase 7 (full B1→B7 Playwright acceptance). When the apps land, these mostly wire the already-built+tested capabilities together.
+
+**Bridge so the deferred work isn't blocking:** build a single **stub dApp harness** in Phase 5 — one static page that can drive every provider call (`requestMint`, `requestTransfer`, `getSpvProof`, `listToken`) and a tiny Node "issuer+verifier" reused from `bolt-wallet`/`smb-payments`. This stands in for all four sites so the provider API, SPV export/verify, and toast/auto-register UX are proven end-to-end **without** the real apps. The real sites later replace the stub page; the contracts/handlers don't change.
+
 ---
 
 ## TDD workflow
@@ -79,14 +91,16 @@ For every phase: **(1) Red** — add the failing test(s) named below; **(2) Gree
 - `rust-wallet/src/handlers/bolt_handlers.rs` + `/bolt` scope in `main.rs`: `requestMint`, `requestTransfer` (issuer→user receive), `getSpvProof`, `listToken`, `getTokens`; per-site **account binding** (`account1` ↔ a BRC-42-derived `usersChosenPubKey`); auto-register (silent/quick-approve in a demo mode).
 - C++: add `/bolt` to `isWalletEndpoint()` (`HttpRequestInterceptor.cpp`) + a BOLT approval overlay reuse; inject `window.hodosBrowser.bolt.*` in `simple_render_process_handler.cpp`.
 - React: `frontend/src/hooks/useBolt.ts`, flesh out `TokensTab.tsx` (list/mint/send/redeem/list), and **toasts** for mint/receive/redeem events (per Hodos CEF input + overlay rules).
-**Verify:** a stub page mints + receives + proves a token via the provider, sees toasts, and binds to `account1`.
+**Stub harness (the bridge — built here, not the real sites):** `bolt-demo/stub/` — one static page exercising every provider call + a tiny Node "issuer+verifier" (reused from `bolt-wallet`/`smb-payments`) standing in for all four sites.
+**Verify:** via the stub page, mint + receive + prove a token through the provider, see toasts, and bind to `account1` — proving the full provider/SPV/UX loop **without** the real apps.
 
-## Phase 6 — Demo sites + issuer backends + SPV verify
+## Phase 6 — Demo sites + issuer backends + SPV verify  ⛔ DEFERRED (blocked on apps)
+> Not started until the four demo apps exist. The stub harness from Phase 5 already proves the underlying capabilities; this phase swaps the stub for the real sites.
 **Red:** per-site contract test: issuer backend mints the right contract to a given pubkey and returns BEEF; the site verifies an incoming SPV proof (`smb-payments` verifier).
 **Green:** `bolt-demo/` with static sites **catpicz.xyz / bwanq.xxx / tackle.new / bucket.shop** (served locally; navigated via the browser) + thin **Node issuer backends** reusing `bolt-wallet`/`ts-bolt` for bwanq (SimpleMultiBolt loan) and tackle (discount coupons), and `smb-payments`-based SPV verification for catpicz/bwanq.
 **Verify:** each site, hit directly, performs its beat.
 
-## Phase 7 — Full demo E2E (acceptance)
+## Phase 7 — Full demo E2E (acceptance)  ⛔ DEFERRED (blocked on Phase 6)
 **Red:** Playwright spec `bolt-demo/test/demo.pw.ts` encoding B1→B7 (extends existing patterns in `bolt-wallet/test/wallet-e2e.pw.ts` / `wallet-sim`).
 **Green:** wire timing/UX so the whole journey runs; toasts + account auto-register land at the right beats.
 **Verify:** one green E2E run executes the entire narrative on `ttn`.
@@ -107,9 +121,12 @@ sighash preimage → `transaction/sighash.rs` · ECDSA → `crypto/signing.rs` �
 ## Test pyramid (definition of done)
 1. `cargo test bolt_golden` — byte-identical lock/unlock/txid vs ts-bolt fixtures (per-phase gate).
 2. Rust handler + SPV-export unit tests (`/bolt/*`, proof bundles verify).
-3. Site issuer + `smb-payments` SPV-verify unit tests.
-4. Provider-API/auto-approve integration tests.
-5. **Playwright B1→B7** on `ttn` — acceptance.
+3. Stub issuer + `smb-payments` SPV-verify unit tests (real-site variants deferred).
+4. Provider-API/auto-approve integration tests, driven by the **stub dApp page**.
+5. **Playwright B1→B7** on `ttn` — acceptance. ⛔ *Deferred until the demo apps exist.*
+
+**Definition of done while apps are unavailable:** Phases 0–5 green (golden vectors byte-match, `/bolt/*` handlers + SPV export pass, provider loop proven via the stub harness). The B1→B7 acceptance run is the final gate once the apps land.
+
 Plus regression: existing BSV send on `main`; Hodos Minimal browser test.
 
 ## Biggest risks & mitigations
