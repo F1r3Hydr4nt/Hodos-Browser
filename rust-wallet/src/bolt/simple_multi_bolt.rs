@@ -266,4 +266,37 @@ mod tests {
             );
         }
     }
+
+    /// B-4 ancestor-populated fungible spends (tx6, tx8 - the getAncestorPieceFungible
+    /// shapes). tx6 carries TWO ancestor txs (A+B, each single-bolt-input, 82 ancestor
+    /// args); tx8 carries ONE ancestor tx with TWO bolt inputs (70 ancestor args). This
+    /// proves the filler assembles the full ancestor-POPULATED 198-arg layout (8.0-8.3kB
+    /// unlocks) byte-for-byte from decoded args. DERIVING the ancestor* args by
+    /// reconstructing the ancestor txs from chain data (boltLib getAncestorPieceFungible)
+    /// is the remaining heavy fungible-ancestor wallet work; the engine layer is now
+    /// proven across every SMB spend shape.
+    #[test]
+    fn ancestor_fungible_unlock_matches_fixtures() {
+        let art = simple_multi_bolt();
+        for (label, raw) in [
+            ("tx6", include_str!("../../tests/fixtures/smb_full_tx6.json")),
+            ("tx8", include_str!("../../tests/fixtures/smb_full_tx8.json")),
+        ] {
+            let fx: Value = serde_json::from_str(raw).unwrap();
+            for bi in fx["boltInputs"].as_array().unwrap() {
+                let vin = bi["vin"].as_u64().unwrap();
+                let ua = bi["args"].as_object().unwrap();
+                let mut args: HashMap<String, Vec<u8>> = HashMap::new();
+                for name in &art.unlock_args {
+                    args.insert(name.clone(), ua.get(name).map(dehex).unwrap_or_default());
+                }
+                let built = fill_unlocking_script(&art, &args).expect("fill");
+                assert_eq!(
+                    hex::encode(&built),
+                    bi["unlockHex"].as_str().unwrap(),
+                    "{label} SMB ancestor-fungible unlock mismatch (vin {vin})"
+                );
+            }
+        }
+    }
 }
