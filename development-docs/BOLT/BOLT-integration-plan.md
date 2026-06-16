@@ -15,10 +15,18 @@ The sibling `priv-chain` repo contains a working **BOLT** token protocol: a TS S
 4. **dApp ↔ wallet via an injected provider** `window.hodosBrowser.bolt.*` (+ existing domain-permission/auto-approve + an approval overlay + celebratory toasts).
 5. **TDD throughout**: each phase is Red (write failing test) → Green (implement) → Refactor.
 
-### Demo contracts (already exist in `priv-chain/sx/bolt/production/`)
-- **MinimumSimpleBalanceBolt (MSBBolt)** — NFT + immutable 16-byte balance → *identity / proof-of-activity* token.
-- **SimpleMultiBolt** — fungible 16-byte balance + `currency` → *loan money (£ IRP)*.
-- **MinSimpleDiscountBolt** — NFT + immutable 1-byte percent (1–100) → *discount coupons*.
+### Production contracts (source of truth = `priv-chain/sx/bolt/production/`)
+All 7 ship in dual `.sx` / `.std.sx` form and are guarded by `sx/tests/bolt/production/{productionStd.equiv,productionDrift}.test.js`. The Rust port embeds the **compiled artifact** of each (see Layer A below), never re-deriving opcodes.
+
+| Production contract | Demo role | Source-of-truth (`sx/tests/bolt/…`) | Lifecycle / forgery suites |
+|---|---|---|---|
+| **MinSimpleBolt** | base NFT (foundational; port first — simplest) | `simple/zeroData/MSBolt.opt3.sx` | `msBolt*.test.js`, `msBoltMelt`, `msBoltStd.broadcast` |
+| **MinSimpleBalanceBolt** (MSBBolt) | *identity / proof-of-activity* — B1, B2 | `simple/zeroData/MinimumSimpleBalanceBolt.sx` | `minSimpleBalanceBolt.{test,spec,forgery}.js` |
+| **MinSimpleDiscountBolt** | *discount coupons* — B4, B6, B7 | `simple/zeroData/MinSimpleDiscountBolt.sx` | `minSimpleDiscountBolt.{test,spec,forgery}.js` |
+| **SimpleMultiBolt** | *loan money (£ IRP)* — B3, B5 | `multi/SimpleMultiBolt.sx` | `simpleMultiBolt.test.js`, `smb_green`, `smb_forgery` |
+| **EventMultiBolt** | event token (follow-on) | `multi/EventMultiBolt.sx` | `multi/eventMultiBolt.test.js` |
+| **EventTriggerMultiBolt** | trigger (follow-on) | `event/EventTriggerMultiBolt.sx` | `event/eventMultiBolt{Trigger,SettleTrigger}.test.js` |
+| **EventListenerMultiBolt** | listener (follow-on) | `event/EventListenerMultiBolt.sx` | `event/eventMultiBolt{Listener,Forgery}.test.js` |
 
 ---
 
@@ -56,6 +64,25 @@ For every phase: **(1) Red** — add the failing test(s) named below; **(2) Gree
 
 ---
 
+## Test segregation for the support integration
+
+Tests are layered A→G. Layers **A–C are anchored on the 7 production contracts**; D–F are infra/UI; G is the deferred app acceptance. Each layer is an independent suite with its own green bar, so the support integration can be built and verified **without the demo apps** (everything except G).
+
+| Layer | Suite (new unless noted) | Asserts | Per-contract scope | Phase |
+|---|---|---|---|---|
+| **A — Artifact integrity** (sx compiler) | `productionStd.equiv.test.js`, `productionDrift.test.js` *(exist — reuse as gates)* | `.std≡.sx`; snapshot≡source-of-truth (recombinants + lock/unlock args) | all 7 | 1 |
+| **A′ — Artifact export → Rust embed** (new) | `sx/tests/bolt/production/artifactExport.test.js` | freezes each contract's compiled artifact (`lockOps`/`unlockOps`/`recombinants`/`lockArgs`/`unlockArgs`) to `rust-wallet/src/bolt/artifacts/<name>.json` and asserts it equals fresh compiler output | all 7 | 1 |
+| **B — Golden vectors** (TS emit → Rust byte-match) | `rust-wallet/tests/bolt_golden/` + emitter `ts-bolt/scripts/emit-golden.mjs` | Rust builder reproduces **byte-identical** lock script, unlock script, txid from the same inputs | MinSimpleBolt, MSBBolt, Discount, SimpleMultiBolt (Event* follow-on) | 1–4 |
+| **C — Soundness / forgery parity** (negative vectors) | `rust-wallet/tests/bolt_forgery/` (fixtures from the `*.forgery`/`smb_forgery` suites) | Rust `verifyTx` **rejects** the same counterfeits the sx forgery suites reject | MSBBolt, Discount, SimpleMultiBolt (Event* follow-on) | 2–4 |
+| **D — ChainBackend** (Rust, contract-free) | `rust-wallet` `chain::arcade` + `chain::config` tests | broadcast/status/BUMP-proof roundtrip vs recorded Arcade responses; URL resolution main/ttn/testnet/local; self-track + import-funding | n/a | 0 |
+| **E — Wallet handlers + SPV export** (Rust) | `rust-wallet` `/bolt/*` handler tests | mint/transfer/melt/receive per contract; `GET /bolt/proof/:id` BEEF verifies via `smb-payments` | MSBBolt, SimpleMultiBolt, Discount | 2–5 |
+| **F — Provider API + stub harness** (decoupled from apps) | provider-injection + auto-approve tests; `bolt-demo/stub/` driver page | `window.hodosBrowser.bolt.*` reaches Rust with `X-Requesting-Domain`; auto-register/account binding; toasts; full provider loop via the **stub page** | all demo contracts | 5 |
+| **G — Real-site + E2E** ⛔ DEFERRED (apps) | per-site contract tests; `bolt-demo/test/demo.pw.ts` | each real site performs its beat; B1→B7 acceptance on `ttn` | — | 6–7 |
+
+**Interim green bar (no apps): A, A′, B, C, D, E, F all pass.** Layer G is the final acceptance once the apps exist.
+
+---
+
 ## Phase 0 — `ChainBackend` over Arcade (`ttn`)
 **Red:** `chain::arcade` test — broadcast a P2PKH tx and round-trip its status+BUMP proof from a (recorded/mock) Arcade response; `ChainBackend::from_settings` resolves the three URLs + `local`.
 **Green:**
@@ -65,10 +92,10 @@ For every phase: **(1) Red** — add the failing test(s) named below; **(2) Gree
 **Verify:** P2PKH send on `ttn` → `202` + BUMP proof stored; existing wallet tests green on `main`.
 
 ## Phase 1 — sx template engine + golden-vector harness (de-risking core)
-**Red:** `cargo test bolt_golden` loads fixtures and asserts byte-identical scripts/txid — initially failing. Fixture emitter (`ts-bolt/scripts/emit-golden.mjs`) walks existing signed-tx sims/tests (`ts-bolt/test/**`, `simpleMultiBolt.test.js`, `smb_green.test.js`, `minSimpleBalanceBolt`, `minSimpleDiscountBolt` suites) → `{op, inputs, expected:{lockHex,unlockHex,txid,rawTxHex}}`.
-**Green:** `rust-wallet/src/bolt/sx_template.rs` — generic filler consuming a `.sx.json` (`lockOps`/`unlockOps` + `recombinants`) + named-arg map → script bytes (one-time port of the `@elas_co/ts` Tx fill step). `include_str!` embed the demo artifacts. `rust-wallet/src/bolt/lib.rs` — port `boltLib` helpers (`buildOutpoint`, `getAncestorPiece[Fungible]`, `verifyTx/verifyTx2`, `splitCtx`).
+**Red (Layers A′, B):** `artifactExport.test.js` freezes each production contract's compiled artifact to `rust-wallet/src/bolt/artifacts/<name>.json` (gated by the existing `productionStd.equiv`/`productionDrift` guards so the embed can't drift). `cargo test bolt_golden` loads fixtures from `emit-golden.mjs` (which walks the production-contract lifecycle suites: `msBolt*`, `minSimpleBalanceBolt`, `minSimpleDiscountBolt`, `simpleMultiBolt`/`smb_green`) → `{op, inputs, expected:{lockHex,unlockHex,txid,rawTxHex}}` — initially failing.
+**Green:** `rust-wallet/src/bolt/sx_template.rs` — generic filler consuming an embedded artifact (`lockOps`/`unlockOps` + `recombinants`) + named-arg map → script bytes (one-time port of the `@elas_co/ts` Tx fill step). `rust-wallet/src/bolt/lib.rs` — port `boltLib` helpers (`buildOutpoint`, `getAncestorPiece[Fungible]`, `verifyTx/verifyTx2`, `splitCtx`).
 **Reuse (do not re-implement):** `transaction/sighash.rs` (ForkID/BIP143 preimage), `transaction/types.rs`, `crypto/signing.rs`, `script/parser.rs`, `beef.rs`.
-**Verify:** MSBBolt mint locking script matches a fixture exactly.
+**Verify:** MinSimpleBolt mint locking script matches its golden fixture exactly (proves the engine before the balance/discount/fungible ports).
 
 ## Phase 2 — MSBBolt identity: mint / transfer / send-to-self + SPV export → **B1, B2**
 **Red:** golden vectors for MSBBolt mint/transfer; `spv_proof` test (exported BEEF verifies via `smb-payments` verifier against an Arcade/WoC ChainTracker).
@@ -111,21 +138,23 @@ Port remaining full-suite contracts to Rust with the same golden-vector discipli
 ---
 
 ## Critical files
-**Create:** `rust-wallet/src/chain/{mod,arcade}.rs`; `rust-wallet/src/bolt/{mod,sx_template,lib,msbbolt,simple_multi,discount}.rs`; `rust-wallet/src/handlers/bolt_handlers.rs`; `rust-wallet/tests/bolt_golden/`; `ts-bolt/scripts/emit-golden.mjs`; `frontend/src/hooks/useBolt.ts`; `bolt-demo/` (4 sites + issuer backends + `test/demo.pw.ts`).
+**Create:** `rust-wallet/src/chain/{mod,arcade}.rs`; `rust-wallet/src/bolt/{mod,sx_template,lib,minsimple,msbbolt,simple_multi,discount}.rs`; `rust-wallet/src/bolt/artifacts/<name>.json` (frozen compiled artifacts, Layer A′); `rust-wallet/src/handlers/bolt_handlers.rs`; `rust-wallet/tests/{bolt_golden,bolt_forgery}/`; `sx/tests/bolt/production/artifactExport.test.js`; `ts-bolt/scripts/emit-golden.mjs`; `frontend/src/hooks/useBolt.ts`; `bolt-demo/stub/` (now) and `bolt-demo/` 4 sites + issuer backends + `test/demo.pw.ts` (deferred).
 **Modify:** `rust-wallet/src/main.rs` (routes, `ChainBackend` in `AppState`); `handlers.rs` (broadcast/height via ChainBackend); `cache_helpers.rs` + `monitor/task_check_for_proofs.rs` (proof source); `utxo_fetcher.rs`/`task_sync_pending.rs` (gate on indexer); `cef-native/src/core/HttpRequestInterceptor.cpp` (`isWalletEndpoint`); `cef-native/src/handlers/simple_render_process_handler.cpp` (inject `window.hodosBrowser.bolt`); `frontend/src/components/wallet/TokensTab.tsx`.
-**Embed/read-only (from priv-chain):** `ts-bolt/src/sxFiles/*.sx.json`, `simplemultibolt/src/contracts/SimpleMultiBolt.sx.json`, `sx/bolt/production/*` (MSBBolt, MinSimpleDiscountBolt, SimpleMultiBolt).
+**Embed/read-only (from priv-chain):** the **compiled artifacts** of the 7 production contracts in `sx/bolt/production/*` (MinSimpleBolt, MinSimpleBalanceBolt, MinSimpleDiscountBolt, SimpleMultiBolt, EventMultiBolt, EventTriggerMultiBolt, EventListenerMultiBolt), exported via Layer A′ rather than hand-copied `.sx.json`.
 
 ## Reuse map (need → existing)
 sighash preimage → `transaction/sighash.rs` · ECDSA → `crypto/signing.rs` · tx/script/varint → `transaction/types.rs` · script parse → `script/parser.rs` · SPV/BEEF/BUMP → `beef.rs`/`beef_helpers.rs` · funding+change+broadcast lifecycle → `create_action`/`sign_action` + Monitor · token keys → `crypto`+`brc42.rs`/`recovery.rs` · issuer minting (sites) → `bolt-wallet`/`ts-bolt` · SPV verify (sites) → `smb-payments/src/verifyPayment.ts`+`smbToken.ts` · E2E harness → `bolt-wallet/test/wallet-e2e.pw.ts`.
 
-## Test pyramid (definition of done)
-1. `cargo test bolt_golden` — byte-identical lock/unlock/txid vs ts-bolt fixtures (per-phase gate).
-2. Rust handler + SPV-export unit tests (`/bolt/*`, proof bundles verify).
-3. Stub issuer + `smb-payments` SPV-verify unit tests (real-site variants deferred).
-4. Provider-API/auto-approve integration tests, driven by the **stub dApp page**.
-5. **Playwright B1→B7** on `ttn` — acceptance. ⛔ *Deferred until the demo apps exist.*
+## Test pyramid (definition of done) — by segregated layer
+1. **A / A′** — `productionStd.equiv` + `productionDrift` (exist) and `artifactExport` (new) keep the embedded artifacts byte-true to the production contracts.
+2. **B** — `cargo test bolt_golden`: byte-identical lock/unlock/txid vs ts-bolt fixtures (per-contract, per-op gate).
+3. **C** — `cargo test bolt_forgery`: Rust `verifyTx` rejects the same counterfeits the sx forgery suites reject.
+4. **D** — `chain::arcade`/`chain::config`: broadcast/proof roundtrip + backend resolution, contract-free.
+5. **E** — `/bolt/*` handler + SPV-export tests (BEEF verifies via `smb-payments`).
+6. **F** — provider-API/auto-approve + stub-harness loop (no real apps).
+7. **G** ⛔ — real-site contract tests + **Playwright B1→B7** on `ttn`. *Deferred until the demo apps exist.*
 
-**Definition of done while apps are unavailable:** Phases 0–5 green (golden vectors byte-match, `/bolt/*` handlers + SPV export pass, provider loop proven via the stub harness). The B1→B7 acceptance run is the final gate once the apps land.
+**Definition of done while apps are unavailable:** Layers **A, A′, B, C, D, E, F green** (Phases 0–5). Layer G is the final acceptance once the apps land.
 
 Plus regression: existing BSV send on `main`; Hodos Minimal browser test.
 
