@@ -11,7 +11,14 @@ The sibling `priv-chain` repo contains a working **BOLT** token protocol: a TS S
 ### Decisions (with the user)
 1. **User wallet ops = Rust-native port** into `rust-wallet` (keys stay in Rust, one daemon). C++/React gain `/bolt/*` calls like existing wallet endpoints.
 2. **Demo sites = external issuers** running Node `ts-bolt` (they are separate parties; legitimately hold their own issuer keys). This shrinks the Rust surface for the demo and is realistic.
-3. **Network = configurable `ChainBackend`** over Arcade: `main`/`ttn`/`testnet` (hosted `arcade-v2-*.bsvblockchain.tech`) + `local` Docker override. Default **`ttn`**. BOLT ops disabled on `main` (mainnet policy rejects non-standard scripts).
+3. **Network = configurable `ChainBackend`**, runtime-selectable (`settings.chain` + `HODOS_CHAIN` env). Variants:
+   - `local-node` — local SV-node **regtest** via JSON-RPC + `sendrawtransaction` + mining (reuses `bolt-wallet`'s broadcaster). **Recommended first live target**: full policy control (`-acceptnonstdtxn` accepts BOLT scripts), self-funding via mining, offline.
+   - `testnet` — public BSV testnet via hosted Arcade (`arcade-v2-testnet-us-1…`). One flip away; ⚠️ **BOLT script acceptance unproven** (testnet policy may reject non-standard scripts) — verify empirically before relying on it.
+   - `ttn` — teratestnet via hosted Arcade (`arcade-v2-ttn-us-1…`). **Only network proven to accept BOLT today.**
+   - `main` — mainnet via hosted Arcade. BOLT ops **disabled** (policy rejects non-standard scripts).
+   - `local-arcade{url}` — a local Arcade container; **deferred** (Arcade only broadcasts/tracks headers — it needs an upstream Teranode/datahub, so a local chain means also running Teranode; not worth the lift now).
+
+   **Correctness is network-free:** Layers A′/B/C (golden vectors + forgery) require no chain, so engine work proceeds before any network is wired. Network only matters at Layer D/E and live broadcast.
 4. **dApp ↔ wallet via an injected provider** `window.hodosBrowser.bolt.*` (+ existing domain-permission/auto-approve + an approval overlay + celebratory toasts).
 5. **TDD throughout**: each phase is Red (write failing test) → Green (implement) → Refactor.
 
@@ -68,7 +75,7 @@ gantt
     dateFormat X
     axisFormat %s
     section Track A · Chain infra
-    P0 ChainBackend + Arcade (Layer D)       :a0, 0, 3
+    P0 ChainBackend node+arcade (Layer D)    :a0, 0, 3
     section Track B · Contract engine
     P1 sx engine + golden harness (A′,B)     :b1, 0, 4
     P2 MinSimpleBolt + MSBBolt (B,C)         :b2, after b1, 3
@@ -122,10 +129,11 @@ Drive the backlog below autonomously with the **`ralph-loop:ralph-loop`** skill.
 **Backlog (ordered; dependencies in brackets):**
 
 *Track A · Chain infra (parallel with Track B)*
-- [ ] **D-1** `ChainBackend` enum + `from_settings` resolves `main/ttn/testnet/local` (+ `HODOS_CHAIN` env) — unit test
-- [ ] **D-2** `arcade::broadcast` (`POST /tx`, octet-stream) + recorded-response & error-mapping test [D-1]
-- [ ] **D-3** `arcade::get_tx_status` → BUMP `merklePath`, fed to `beef.rs` — test [D-1]
-- [ ] **D-4** route existing broadcast/proof/height through `ChainBackend`; gate WoC UTXO on `has_address_indexer` [D-2,D-3]
+- [ ] **D-1** `ChainBackend` enum + `from_settings` resolves `local-node/testnet/ttn/main` (+ `HODOS_CHAIN`); `Broadcaster`/`ProofSource`/`HeaderSource` traits — unit test
+- [ ] **D-2a** `node.rs` (default): SV-node RPC `sendrawtransaction` + `generatetoaddress` + recorded-response test [D-1]
+- [ ] **D-2b** `arcade.rs`: `broadcast` (`POST /tx`) + error-mapping test [D-1]
+- [ ] **D-3** proof: `node` `getrawtransaction`/mined-confirmation **and** `arcade::get_tx_status` → BUMP `merklePath` fed to `beef.rs` — test [D-1]
+- [ ] **D-4** route existing broadcast/proof/height through `ChainBackend`; gate WoC UTXO on `has_address_indexer` [D-2a,D-2b,D-3]
 - [ ] **D-5** self-track outputs + `POST /wallet/import-funding` — test [D-4]
 
 *Track B · Contract engine*
@@ -157,10 +165,12 @@ Drive the backlog below autonomously with the **`ralph-loop:ralph-loop`** skill.
 
 ---
 
-## Phase 0 — `ChainBackend` over Arcade (`ttn`)
-**Red:** `chain::arcade` test — broadcast a P2PKH tx and round-trip its status+BUMP proof from a (recorded/mock) Arcade response; `ChainBackend::from_settings` resolves the three URLs + `local`.
+## Phase 0 — `ChainBackend` (default `local-node` regtest; `testnet`/`ttn` via Arcade)
+**Red:** `chain::config` test — `ChainBackend::from_settings` resolves `local-node` / `testnet` / `ttn` / `main` (+ `HODOS_CHAIN`). `chain::node` test — broadcast a P2PKH tx + mine via SV-node RPC (recorded/mock). `chain::arcade` test — round-trip status+BUMP proof from a recorded Arcade response.
 **Green:**
-- `rust-wallet/src/chain/{mod,arcade}.rs`: `ChainBackend{Mainnet,Ttn,Testnet,Local(url)}` → broadcast/proof/header URLs + `has_address_indexer`. `arcade.rs`: `broadcast` (`POST /tx`, octet-stream), `get_tx_status` (`GET /tx/:txid` → BUMP `merklePath`, already consumed by `beef.rs`), headers via `/chaintracks/v1/*`.
+- `rust-wallet/src/chain/{mod,node,arcade}.rs`. `ChainBackend{ LocalNode{rpc}, Testnet, Ttn, Mainnet, LocalArcade{url} }` → a `Broadcaster` + `ProofSource` + `HeaderSource` + `has_address_indexer`.
+  - `node.rs`: JSON-RPC `sendrawtransaction` + `generatetoaddress` (mining) + `getrawtransaction`/`gettxout` (reuse `bolt-wallet`'s broadcaster shape).
+  - `arcade.rs`: `broadcast` (`POST /tx`, octet-stream), `get_tx_status` (`GET /tx/:txid` → BUMP `merklePath`, already consumed by `beef.rs`), headers via `/chaintracks/v1/*`.
 - Route existing broadcast (`handlers.rs:~8219`), proof fetch (`cache_helpers.rs`, `monitor/task_check_for_proofs.rs`), height/header (`handlers.rs:~11666`) through `ChainBackend`. Gate WoC UTXO fetch (`utxo_fetcher.rs`, `task_sync_pending.rs`) on `has_address_indexer`.
 - **Funding (keep-today/improve):** today = poll WoC per-address into `outputs`, `create_action` selects. Keep WoC for `main`/`testnet`; for Arcade-only `ttn`, **self-track** outputs the wallet creates (insert at build time, confirm via `GET /tx/:txid`) + seed initial funds via `POST /wallet/import-funding` (raw faucet tx + vout, reuses output-insert path).
 **Verify:** P2PKH send on `ttn` → `202` + BUMP proof stored; existing wallet tests green on `main`.
