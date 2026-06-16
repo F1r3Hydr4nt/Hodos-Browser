@@ -26,8 +26,15 @@ pub fn mint_lock_args(owner_pubkey: &[u8], balance: &[u8]) -> HashMap<String, Ve
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::bolt::sx_template::{fill_locking_script, min_simple_balance_bolt};
+    use crate::bolt::ctx::{ctx_footer, ctx_header, hash_outputs, hash_prevouts, hash_sequence};
+    use crate::bolt::min_simple_bolt::simple_spend_unlock_args;
+    use crate::bolt::sx_template::{fill_locking_script, fill_unlocking_script, min_simple_balance_bolt};
     use serde_json::Value;
+
+    fn dehex(v: &Value) -> Vec<u8> {
+        let s = v.as_str().unwrap();
+        if s.is_empty() { Vec::new() } else { hex::decode(s).unwrap() }
+    }
 
     /// B-3 mint-lock golden: deriving the genesis args (incl. the 16-byte balance)
     /// and filling reproduces the SxSimulator's MSBBolt tx0 bolt output lock
@@ -46,5 +53,41 @@ mod tests {
         let expected = fx["txs"][0]["outs"][0]["lockHex"].as_str().unwrap();
 
         assert_eq!(hex::encode(&lock), expected, "MSBBolt mint lock mismatch vs fixture tx0");
+    }
+
+    /// B-3 transfer: MSBBolt's unlockArgs are identical to MinSimpleBolt's, so the
+    /// SAME simple_spend_unlock_args reproduces MSBBolt's tx1 transfer unlock
+    /// byte-for-byte (just passing MSBBolt's 1296B spent lock + artifact). Proves
+    /// the unlock builder is contract-generic across NFT variants.
+    #[test]
+    fn transfer_unlock_matches_fixture() {
+        const TX1: &str = include_str!("../../tests/fixtures/msbbolt_spend_tx1.json");
+        let fx: Value = serde_json::from_str(TX1).unwrap();
+        let st = &fx["struct"];
+        let ua = fx["args"].as_object().unwrap();
+
+        let owner = dehex(&ua["pubKey"]);
+        let spent_lock = dehex(&st["spentLockScript"]);
+
+        let inputs = st["inputs"].as_array().unwrap();
+        let outpoints: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["outpoint"])).collect();
+        let sequences: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["sequence"])).collect();
+        let outputs_raw: Vec<(Vec<u8>, Vec<u8>)> = st["outputs"].as_array().unwrap().iter()
+            .map(|o| (dehex(&o["value"]), dehex(&o["script"]))).collect();
+        let bolt_idx = st["boltInputIndex"].as_u64().unwrap() as usize;
+
+        let header = ctx_header(&dehex(&st["version"]), &hash_prevouts(&outpoints),
+            &hash_sequence(&sequences), &outpoints[bolt_idx]);
+        let footer = ctx_footer(&dehex(&st["spentValue"]), &sequences[bolt_idx],
+            &hash_outputs(&outputs_raw), &dehex(&st["locktime"]), &dehex(&st["sighashType"]));
+
+        let fund_outpoint = outpoints[1 - bolt_idx].clone();
+
+        let args = simple_spend_unlock_args(
+            &owner, &spent_lock, &fund_outpoint, &dehex(&ua["changeOutput"]),
+            &dehex(&ua["beneficiaryPubKeyHash"]), &header, &footer, &dehex(&ua["sig"]),
+        );
+        let built = fill_unlocking_script(&min_simple_balance_bolt(), &args).expect("fill");
+        assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "MSBBolt tx1 transfer unlock mismatch");
     }
 }
