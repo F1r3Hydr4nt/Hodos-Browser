@@ -82,6 +82,42 @@ pub fn genesis_spend_unlock_args(
     m
 }
 
+/// General ancestor-less spend unlock args (tx1/2/3-type: 26 ancestor* empty).
+/// Unlike `genesis_spend_unlock_args`, the spent output's lock script is passed
+/// in (the wallet's UTXO) rather than re-derived - because across transfers the
+/// owner pubKeyHash changes while the issuer stays fixed, so the spent lock is
+/// not a freshly-derived mint lock.
+#[allow(clippy::too_many_arguments)]
+pub fn simple_spend_unlock_args(
+    owner_pubkey: &[u8],
+    spent_lock_script: &[u8],
+    fund_outpoint: &[u8],
+    change_output: &[u8],
+    beneficiary_pkh: &[u8],
+    ctx_header: &[u8],
+    ctx_footer: &[u8],
+    sig: &[u8],
+) -> HashMap<String, Vec<u8>> {
+    let mut m = HashMap::new();
+    for name in &min_simple_bolt().unlock_args {
+        if name.starts_with("ancestor") {
+            m.insert(name.clone(), Vec::new());
+        }
+    }
+    m.insert("pubKey".to_string(), owner_pubkey.to_vec());
+    m.insert("ctxCodeLockLen".to_string(), varint(spent_lock_script.len()));
+    m.insert("ctxCodeLockScriptCode".to_string(), spent_lock_script.to_vec());
+    m.insert("ctxCodeUnlockScriptCode".to_string(), UNLOCK_SCRIPT_CODE.to_vec());
+    m.insert("ctxCodeLen".to_string(), varint(spent_lock_script.len() + UNLOCK_SCRIPT_CODE.len()));
+    m.insert("fundOutpoint".to_string(), fund_outpoint.to_vec());
+    m.insert("changeOutput".to_string(), change_output.to_vec());
+    m.insert("beneficiaryPubKeyHash".to_string(), beneficiary_pkh.to_vec());
+    m.insert("ctxHeader".to_string(), ctx_header.to_vec());
+    m.insert("ctxFooter".to_string(), ctx_footer.to_vec());
+    m.insert("sig".to_string(), sig.to_vec());
+    m
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -241,5 +277,52 @@ mod tests {
 
         let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("unlock fill");
         assert_eq!(hex::encode(&built), un["unlockHex"].as_str().unwrap(), "full genesis unlock mismatch");
+    }
+
+    /// B-2 generalization: the ancestor-less spend builder reproduces tx1, tx2 AND
+    /// tx3 unlocks byte-for-byte (non-genesis simple transfers; owner pubKeyHash
+    /// changes across transfers, issuer fixed). Ancestor reconstruction is isolated
+    /// to the tx4-type spend (handled separately).
+    #[test]
+    fn simple_spends_full_unlock_match_fixtures() {
+        const TX1: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx1.json");
+        const TX2: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx2.json");
+        const TX3: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx3.json");
+
+        for (label, raw) in [("tx1", TX1), ("tx2", TX2), ("tx3", TX3)] {
+            let fx: Value = serde_json::from_str(raw).unwrap();
+            let st = &fx["struct"];
+            let ua = fx["args"].as_object().unwrap();
+
+            let owner = dehex(&ua["pubKey"]);
+            let spent_lock = dehex(&st["spentLockScript"]);
+
+            let inputs = st["inputs"].as_array().unwrap();
+            let outpoints: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["outpoint"])).collect();
+            let sequences: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["sequence"])).collect();
+            let outputs_raw: Vec<(Vec<u8>, Vec<u8>)> = st["outputs"].as_array().unwrap().iter()
+                .map(|o| (dehex(&o["value"]), dehex(&o["script"]))).collect();
+            let bolt_idx = st["boltInputIndex"].as_u64().unwrap() as usize;
+
+            let header = ctx_header(&dehex(&st["version"]), &hash_prevouts(&outpoints),
+                &hash_sequence(&sequences), &outpoints[bolt_idx]);
+            let footer = ctx_footer(&dehex(&st["spentValue"]), &sequences[bolt_idx],
+                &hash_outputs(&outputs_raw), &dehex(&st["locktime"]), &dehex(&st["sighashType"]));
+
+            // fundOutpoint is the non-bolt (funding) input - derivable from the tx
+            let fund_outpoint = outpoints[1 - bolt_idx].clone();
+            assert_eq!(hex::encode(&fund_outpoint), ua["fundOutpoint"].as_str().unwrap(), "{label} fundOutpoint");
+
+            // changeOutput, beneficiary, sig are wallet-chosen spend params (the
+            // wallet picks its change, the send target, and signs)
+            let change_output = dehex(&ua["changeOutput"]);
+
+            let args = simple_spend_unlock_args(
+                &owner, &spent_lock, &fund_outpoint, &change_output,
+                &dehex(&ua["beneficiaryPubKeyHash"]), &header, &footer, &dehex(&ua["sig"]),
+            );
+            let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("fill");
+            assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "{label} full unlock mismatch");
+        }
     }
 }
