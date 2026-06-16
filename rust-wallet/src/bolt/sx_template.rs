@@ -46,6 +46,13 @@ pub fn min_simple_balance_bolt() -> Artifact {
         .expect("embedded MinSimpleBalanceBolt artifact is valid")
 }
 
+/// The frozen SimpleMultiBolt artifact - fungible token (16-byte balance + currency).
+pub const SIMPLE_MULTI_BOLT_JSON: &str = include_str!("artifacts/SimpleMultiBolt.json");
+
+pub fn simple_multi_bolt() -> Artifact {
+    Artifact::from_json(SIMPLE_MULTI_BOLT_JSON).expect("embedded SimpleMultiBolt artifact is valid")
+}
+
 /// Append a minimal-encoded data push (matches @bsv/sdk writeBin).
 pub fn push_data(out: &mut Vec<u8>, data: &[u8]) {
     let n = data.len();

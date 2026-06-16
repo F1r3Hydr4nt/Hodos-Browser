@@ -11,4 +11,5 @@ pub mod min_simple_bolt;
 pub mod mint;
 pub mod msbbolt;
 pub mod sign;
+pub mod simple_multi_bolt;
 pub mod sx_template;
