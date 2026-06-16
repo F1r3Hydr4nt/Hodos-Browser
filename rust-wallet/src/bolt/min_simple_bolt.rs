@@ -325,4 +325,29 @@ mod tests {
             assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "{label} full unlock mismatch");
         }
     }
+
+    /// tx4 is the one spend that populates the 26 ancestor* args (reconstructing
+    /// the parent tx3). Confirm the filler reproduces its 37-arg unlock (incl.
+    /// populated ancestors) byte-for-byte.
+    #[test]
+    fn tx4_ancestor_unlock_assembly_matches_fixture() {
+        const TX4: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx4.json");
+        let fx: Value = serde_json::from_str(TX4).unwrap();
+        let args = args_map_from_fixture(fx["args"].as_object().unwrap());
+        // sanity: ancestors are populated here
+        assert!(!args.get("ancestorVer").unwrap().is_empty());
+        assert!(!args.get("ancestorVin1Sig").unwrap().is_empty());
+        let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("fill");
+        assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "tx4 ancestor unlock mismatch");
+    }
+
+    // NOTE (B-2 ancestor reconstruction - BLOCKED, see PROGRESS.md): the tx4
+    // ancestor* args do NOT reconstruct the immediate parent tx3. Evidence:
+    //   ancestorVin1Outpoint = 2f1f1995..c9:0  (a funding/genesis-era outpoint)
+    //     but tx3.inputs[0].outpoint = 94bcc238..d8:0
+    //   ancestorVout1TxoType = 0x21 (settle)
+    // The reconstructed ancestor follows BOLT's commit/settle lineage, not the
+    // direct parent. Deriving it requires reading the sx contract's ancestor
+    // reconstruction + the commit/settle tx semantics. Deferred; the ancestor-less
+    // spends (mint + tx1/2/3 transfers) are fully derived above.
 }
