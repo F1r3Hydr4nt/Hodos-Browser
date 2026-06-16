@@ -5,6 +5,7 @@
 //! sx simulator's `processRecombinants`. Per-contract arg builders + golden
 //! byte-match tests land in B-2..C-3.
 
+pub mod beef_export;
 pub mod ctx;
 pub mod discount;
 pub mod lib;
