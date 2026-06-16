@@ -22,6 +22,8 @@ pub enum ArcadeError {
     Rejected(String),
     /// 503 - broker backpressure; safe to retry.
     Backpressure,
+    /// 404 - Arcade has never seen this txid.
+    NotFound,
     /// Transport/HTTP failure.
     Http(String),
     /// Body not the expected shape.
@@ -68,6 +70,44 @@ pub fn parse_submit_response(status: u16, body: &str) -> Result<SubmitStatus, Ar
     }
 }
 
+/// Lifecycle state of a submitted tx (Arcade `GET /tx/:txid`). `merkle_path`
+/// is the BUMP hex, present once mined (consumable by beef.rs).
+#[derive(Debug, PartialEq)]
+pub struct TxStatus {
+    pub tx_status: String,
+    pub block_hash: Option<String>,
+    pub block_height: Option<u64>,
+    pub merkle_path: Option<String>,
+}
+
+impl TxStatus {
+    /// True once a BUMP merkle path is available (tx mined + proof built).
+    pub fn is_mined(&self) -> bool {
+        self.merkle_path.as_deref().map(|s| !s.is_empty()).unwrap_or(false)
+    }
+}
+
+/// Classify an Arcade `GET /tx/:txid` response. 404 -> NotFound.
+pub fn parse_tx_status(status: u16, body: &str) -> Result<TxStatus, ArcadeError> {
+    match status {
+        200 => {
+            let v: Value = serde_json::from_str(body)
+                .map_err(|e| ArcadeError::Parse(format!("invalid json: {e}")))?;
+            let str_field = |k: &str| v.get(k).and_then(|x| x.as_str()).filter(|s| !s.is_empty()).map(|s| s.to_string());
+            Ok(TxStatus {
+                tx_status: v.get("txStatus").and_then(|x| x.as_str())
+                    .or_else(|| v.get("status").and_then(|x| x.as_str()))
+                    .unwrap_or("").to_string(),
+                block_hash: str_field("blockHash"),
+                block_height: v.get("blockHeight").and_then(|x| x.as_u64()),
+                merkle_path: str_field("merklePath"),
+            })
+        }
+        404 => Err(ArcadeError::NotFound),
+        other => Err(ArcadeError::Unexpected { status: other, body: body.to_string() }),
+    }
+}
+
 /// Thin async Arcade client.
 pub struct ArcadeClient {
     client: reqwest::Client,
@@ -92,6 +132,16 @@ impl ArcadeClient {
         let status = resp.status().as_u16();
         let text = resp.text().await.map_err(|e| ArcadeError::Http(e.to_string()))?;
         parse_submit_response(status, &text)
+    }
+
+    /// Look up a submitted tx's status (+ BUMP merkle path once mined).
+    pub async fn get_tx_status(&self, txid: &str) -> Result<TxStatus, ArcadeError> {
+        let url = format!("{}/tx/{}", self.base_url.trim_end_matches('/'), txid);
+        let resp = self.client.get(url).send().await
+            .map_err(|e| ArcadeError::Http(e.to_string()))?;
+        let status = resp.status().as_u16();
+        let text = resp.text().await.map_err(|e| ArcadeError::Http(e.to_string()))?;
+        parse_tx_status(status, &text)
     }
 }
 
@@ -145,5 +195,31 @@ mod tests {
     #[test]
     fn parse_rejects_bad_202_body() {
         assert!(matches!(parse_submit_response(202, "not json"), Err(ArcadeError::Parse(_))));
+    }
+
+    #[test]
+    fn tx_status_mined_exposes_bump() {
+        let body = r#"{"txid":"abc","txStatus":"MINED","blockHash":"0000dead","blockHeight":870123,"merklePath":"fe..bump.."}"#;
+        let s = parse_tx_status(200, body).unwrap();
+        assert_eq!(s.tx_status, "MINED");
+        assert_eq!(s.block_height, Some(870123));
+        assert_eq!(s.block_hash.as_deref(), Some("0000dead"));
+        assert_eq!(s.merkle_path.as_deref(), Some("fe..bump.."));
+        assert!(s.is_mined());
+    }
+
+    #[test]
+    fn tx_status_seen_but_not_mined() {
+        let body = r#"{"txid":"abc","txStatus":"SEEN_ON_NETWORK","blockHash":null,"blockHeight":null,"merklePath":null}"#;
+        let s = parse_tx_status(200, body).unwrap();
+        assert_eq!(s.tx_status, "SEEN_ON_NETWORK");
+        assert_eq!(s.merkle_path, None);
+        assert_eq!(s.block_height, None);
+        assert!(!s.is_mined());
+    }
+
+    #[test]
+    fn tx_status_404_is_not_found() {
+        assert_eq!(parse_tx_status(404, "{}"), Err(ArcadeError::NotFound));
     }
 }

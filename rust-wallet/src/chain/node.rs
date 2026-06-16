@@ -85,6 +85,33 @@ pub fn parse_block_hashes(body: &str) -> Result<Vec<String>, NodeError> {
         .collect()
 }
 
+/// Mined-confirmation info from `getrawtransaction <txid> true` (verbose).
+#[derive(Debug, PartialEq)]
+pub struct TxConfirmation {
+    pub confirmations: i64,
+    pub blockhash: Option<String>,
+}
+
+impl TxConfirmation {
+    pub fn is_confirmed(&self) -> bool {
+        self.confirmations > 0
+    }
+}
+
+/// Parse the verbose `getrawtransaction` response into confirmation info.
+/// An unconfirmed (mempool) tx has no `confirmations`/`blockhash`.
+pub fn parse_tx_confirmation(body: &str) -> Result<TxConfirmation, NodeError> {
+    let result = parse_rpc_response(body)?;
+    Ok(TxConfirmation {
+        confirmations: result.get("confirmations").and_then(|c| c.as_i64()).unwrap_or(0),
+        blockhash: result
+            .get("blockhash")
+            .and_then(|b| b.as_str())
+            .filter(|s| !s.is_empty())
+            .map(|s| s.to_string()),
+    })
+}
+
 /// Thin async JSON-RPC client over reqwest with HTTP basic auth.
 pub struct NodeRpc {
     client: reqwest::Client,
@@ -149,6 +176,22 @@ impl NodeRpc {
             })
             .collect()
     }
+
+    /// Fetch verbose tx info to determine mined confirmation status.
+    pub async fn get_tx_confirmation(&self, txid: &str) -> Result<TxConfirmation, NodeError> {
+        let body = build_rpc_body("getrawtransaction", vec![json!(txid), json!(true)]);
+        let resp = self
+            .client
+            .post(&self.url)
+            .basic_auth(&self.user, Some(&self.pass))
+            .header("content-type", "application/json")
+            .body(body)
+            .send()
+            .await
+            .map_err(|e| NodeError::Http(e.to_string()))?;
+        let text = resp.text().await.map_err(|e| NodeError::Http(e.to_string()))?;
+        parse_tx_confirmation(&text)
+    }
 }
 
 #[cfg(test)]
@@ -200,5 +243,30 @@ mod tests {
     #[test]
     fn parse_rejects_invalid_json() {
         assert!(matches!(parse_rpc_response("not json"), Err(NodeError::Parse(_))));
+    }
+
+    #[test]
+    fn confirmation_confirmed() {
+        let body = r#"{"result":{"txid":"abc","confirmations":6,"blockhash":"0000dead"},"error":null,"id":"hodos"}"#;
+        let c = parse_tx_confirmation(body).unwrap();
+        assert_eq!(c.confirmations, 6);
+        assert_eq!(c.blockhash.as_deref(), Some("0000dead"));
+        assert!(c.is_confirmed());
+    }
+
+    #[test]
+    fn confirmation_mempool_only() {
+        // unconfirmed: node omits confirmations/blockhash
+        let body = r#"{"result":{"txid":"abc"},"error":null,"id":"hodos"}"#;
+        let c = parse_tx_confirmation(body).unwrap();
+        assert_eq!(c.confirmations, 0);
+        assert_eq!(c.blockhash, None);
+        assert!(!c.is_confirmed());
+    }
+
+    #[test]
+    fn confirmation_propagates_rpc_error() {
+        let body = r#"{"result":null,"error":{"code":-5,"message":"No such mempool tx"},"id":"hodos"}"#;
+        assert!(matches!(parse_tx_confirmation(body), Err(NodeError::Rpc { code: -5, .. })));
     }
 }
