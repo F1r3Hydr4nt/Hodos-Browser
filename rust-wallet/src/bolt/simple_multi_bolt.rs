@@ -73,6 +73,34 @@ pub fn transfer_unlock_args(
     m
 }
 
+/// SMB split unlock args (e.g. tx7): a single bolt input produces TWO owner
+/// outputs, so both `pub_key_hash1` and `pub_key_hash2` are set, plus the
+/// 16-byte `next_balance_commit` carrying the remainder balance, and
+/// `next_txo_type` is the split type (0x23). Otherwise identical to a transfer.
+#[allow(clippy::too_many_arguments)]
+pub fn split_unlock_args(
+    owner_pubkey: &[u8],
+    spent_lock: &[u8],
+    fund_outpoint: &[u8],
+    change_output: &[u8],
+    pub_key_hash1: &[u8],
+    pub_key_hash2: &[u8],
+    next_balance_commit: &[u8],
+    next_txo_type: &[u8],
+    input_index_n: &[u8],
+    ctx_header: &[u8],
+    ctx_footer: &[u8],
+    sig: &[u8],
+) -> HashMap<String, Vec<u8>> {
+    let mut m = transfer_unlock_args(
+        owner_pubkey, spent_lock, fund_outpoint, change_output,
+        pub_key_hash1, next_txo_type, input_index_n, ctx_header, ctx_footer, sig,
+    );
+    m.insert("pubKeyHash2".into(), pub_key_hash2.to_vec());
+    m.insert("nextBalanceCommit".into(), next_balance_commit.to_vec());
+    m
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -84,6 +112,23 @@ mod tests {
     fn dehex(v: &Value) -> Vec<u8> {
         let s = v.as_str().unwrap();
         if s.is_empty() { Vec::new() } else { hex::decode(s).unwrap() }
+    }
+
+    /// Derive the BIP143 ctxHeader(104)/ctxFooter(52) for a spend fixture's bolt
+    /// input from its decoded `struct` (version/locktime/sighashType + per-input
+    /// outpoints/sequences + outputs + spentValue), via bolt::ctx.
+    fn ctx_from_struct(st: &Value) -> (Vec<u8>, Vec<u8>) {
+        let inputs = st["inputs"].as_array().unwrap();
+        let outpoints: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["outpoint"])).collect();
+        let sequences: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["sequence"])).collect();
+        let outputs_raw: Vec<(Vec<u8>, Vec<u8>)> = st["outputs"].as_array().unwrap().iter()
+            .map(|o| (dehex(&o["value"]), dehex(&o["script"]))).collect();
+        let bolt_idx = st["boltInputIndex"].as_u64().unwrap() as usize;
+        let header = ctx_header(&dehex(&st["version"]), &hash_prevouts(&outpoints),
+            &hash_sequence(&sequences), &outpoints[bolt_idx]);
+        let footer = ctx_footer(&dehex(&st["spentValue"]), &sequences[bolt_idx],
+            &hash_outputs(&outputs_raw), &dehex(&st["locktime"]), &dehex(&st["sighashType"]));
+        (header, footer)
     }
 
     /// B-4 mint-lock golden: deriving the 11 genesis args (incl. the 16-byte
@@ -149,6 +194,46 @@ mod tests {
             let built = fill_unlocking_script(&simple_multi_bolt(), &args).expect("fill");
             assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "{label} SMB transfer unlock mismatch");
         }
+    }
+
+    /// B-4 single-input variants: tx2/tx4 are settles (empty pubKeyHash1, no
+    /// balanceCommit, nextTxoType=0x20) reproduced by transfer_unlock_args with an
+    /// empty new-owner; tx7 is a split (pubKeyHash1+pubKeyHash2+nextBalanceCommit,
+    /// nextTxoType=0x23) via split_unlock_args. All ancestor-less, single bolt input.
+    #[test]
+    fn settle_and_split_unlock_match_fixtures() {
+        // settles: tx2, tx4 (transfer builder, empty pubKeyHash1)
+        for label in ["tx2", "tx4"] {
+            let raw = match label {
+                "tx2" => include_str!("../../tests/fixtures/smb_spend_tx2.json"),
+                _ => include_str!("../../tests/fixtures/smb_spend_tx4.json"),
+            };
+            let fx: Value = serde_json::from_str(raw).unwrap();
+            let (header, footer) = ctx_from_struct(&fx["struct"]);
+            let ua = fx["args"].as_object().unwrap();
+            let args = transfer_unlock_args(
+                &dehex(&ua["pubKey"]), &dehex(&fx["struct"]["spentLockScript"]),
+                &dehex(&ua["fundOutpoint"]), &dehex(&ua["changeOutput"]),
+                &dehex(&ua["pubKeyHash1"]), &dehex(&ua["nextTxoType"]), &dehex(&ua["inputIndexN"]),
+                &header, &footer, &dehex(&ua["sig"]),
+            );
+            let built = fill_unlocking_script(&simple_multi_bolt(), &args).expect("fill");
+            assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "{label} SMB settle unlock mismatch");
+        }
+
+        // split: tx7
+        let fx: Value = serde_json::from_str(include_str!("../../tests/fixtures/smb_spend_tx7.json")).unwrap();
+        let (header, footer) = ctx_from_struct(&fx["struct"]);
+        let ua = fx["args"].as_object().unwrap();
+        let args = split_unlock_args(
+            &dehex(&ua["pubKey"]), &dehex(&fx["struct"]["spentLockScript"]),
+            &dehex(&ua["fundOutpoint"]), &dehex(&ua["changeOutput"]),
+            &dehex(&ua["pubKeyHash1"]), &dehex(&ua["pubKeyHash2"]), &dehex(&ua["nextBalanceCommit"]),
+            &dehex(&ua["nextTxoType"]), &dehex(&ua["inputIndexN"]),
+            &header, &footer, &dehex(&ua["sig"]),
+        );
+        let built = fill_unlocking_script(&simple_multi_bolt(), &args).expect("fill");
+        assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "tx7 SMB split unlock mismatch");
     }
 
     /// B-4 merge (2-bolt-input swap/merge, tx5): the engine fills the full 198-arg
