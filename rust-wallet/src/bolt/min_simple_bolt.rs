@@ -118,6 +118,19 @@ pub fn simple_spend_unlock_args(
     m
 }
 
+/// Melt unlock args: spend the bolt to a P2PKH (destroy the token). The melt
+/// branch needs only the owner's signature + pubkey; all other 35 unlock args
+/// are empty.
+pub fn melt_unlock_args(owner_pubkey: &[u8], sig: &[u8]) -> HashMap<String, Vec<u8>> {
+    let mut m = HashMap::new();
+    for name in &min_simple_bolt().unlock_args {
+        m.insert(name.clone(), Vec::new());
+    }
+    m.insert("pubKey".to_string(), owner_pubkey.to_vec());
+    m.insert("sig".to_string(), sig.to_vec());
+    m
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -339,6 +352,21 @@ mod tests {
         assert!(!args.get("ancestorVin1Sig").unwrap().is_empty());
         let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("fill");
         assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "tx4 ancestor unlock mismatch");
+    }
+
+    /// B-2 melt: the melt unlock (only sig + pubKey populated) reproduces tx5's
+    /// bolt-input unlock byte-for-byte (sig injected; needs the owner key live).
+    #[test]
+    fn melt_unlock_matches_fixture() {
+        const TX5: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx5.json");
+        let fx: Value = serde_json::from_str(TX5).unwrap();
+        let ua = fx["args"].as_object().unwrap();
+        let owner = dehex(&ua["pubKey"]);
+        let sig = dehex(&ua["sig"]);
+
+        let args = melt_unlock_args(&owner, &sig);
+        let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("melt fill");
+        assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "melt unlock mismatch");
     }
 
     // NOTE (B-2 ancestor reconstruction - BLOCKED, see PROGRESS.md): the tx4
