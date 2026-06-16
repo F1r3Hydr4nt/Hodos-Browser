@@ -38,6 +38,14 @@ pub fn min_simple_bolt() -> Artifact {
     Artifact::from_json(MIN_SIMPLE_BOLT_JSON).expect("embedded MinSimpleBolt artifact is valid")
 }
 
+/// The frozen MinSimpleBalanceBolt (MSBBolt) artifact - NFT + immutable 16-byte balance.
+pub const MIN_SIMPLE_BALANCE_BOLT_JSON: &str = include_str!("artifacts/MinSimpleBalanceBolt.json");
+
+pub fn min_simple_balance_bolt() -> Artifact {
+    Artifact::from_json(MIN_SIMPLE_BALANCE_BOLT_JSON)
+        .expect("embedded MinSimpleBalanceBolt artifact is valid")
+}
+
 /// Append a minimal-encoded data push (matches @bsv/sdk writeBin).
 pub fn push_data(out: &mut Vec<u8>, data: &[u8]) {
     let n = data.len();
