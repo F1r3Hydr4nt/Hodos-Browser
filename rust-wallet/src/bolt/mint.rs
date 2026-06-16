@@ -155,6 +155,37 @@ mod tests {
         assert!(raw.windows(sig.len()).any(|w| w == sig.as_slice()), "tx carries the funding signature");
     }
 
+    /// Emit a deterministic B1 identity-mint fixture for the cross-repo
+    /// acceptance test (spv-demo-wapps drives catpicz/bwanq with this rawTx).
+    /// Writes {rawTxHex, pubKeyHex, pubKeyHashHex, balanceHex}; deterministic so
+    /// it doubles as a committed fixture.
+    #[test]
+    fn emit_b1_identity_mint_fixture() {
+        use crate::bolt::lib::hash160;
+        let secp = Secp256k1::new();
+        let sk = [0x2au8; 32]; // the wallet's user key (deterministic for the demo)
+        let pk = PublicKey::from_secret_key(&secp, &SecretKey::from_slice(&sk).unwrap())
+            .serialize()
+            .to_vec();
+        let balance = hex::decode("0000000000000000000000000000cafe").unwrap();
+        let funding = Funding {
+            txid: "11".repeat(32),
+            vout: 0,
+            value: 100_000,
+            priv_key: sk,
+            pub_key: pk.clone(),
+        };
+        let r = build_msbbolt_mint(&pk, &balance, &funding, 200).unwrap();
+        let pkh = hash160(&pk);
+        let json = format!(
+            "{{\n  \"rawTxHex\": \"{}\",\n  \"txid\": \"{}\",\n  \"pubKeyHex\": \"{}\",\n  \"pubKeyHashHex\": \"{}\",\n  \"balanceHex\": \"{}\"\n}}\n",
+            r.raw_tx_hex, r.txid, hex::encode(&pk), hex::encode(pkh), hex::encode(&balance)
+        );
+        let dir = concat!(env!("CARGO_MANIFEST_DIR"), "/tests/fixtures");
+        std::fs::create_dir_all(dir).unwrap();
+        std::fs::write(format!("{dir}/b1_identity_mint.json"), json).unwrap();
+    }
+
     #[test]
     fn rejects_insufficient_funding() {
         let secp = Secp256k1::new();
