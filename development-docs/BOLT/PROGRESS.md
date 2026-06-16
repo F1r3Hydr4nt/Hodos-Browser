@@ -28,6 +28,15 @@ The demo SITES are built: `priv-chain/spv-demo-wapps/` - 4 NestJS issuer/verifie
 - **Impact:** the planned Phase-5 stub dApp harness is SUPERSEDED by these real apps. The Hodos wallet's Layers E (/bolt handlers + SPV export) and F (provider API) are now tested against the running apps (their HTTP endpoints: catpicz `POST /identity/verify`, bwanq `POST /loan/approve`, tackle `POST /coupons/claim`+`/pay`, bucket `POST /listings`). The B1->B7 e2e currently drives the wallet side via the TS libs; the integration goal is to drive it from the Hodos browser wallet instead.
 - **Architecture confirmed:** sites = external NestJS issuers (reuse ts-bolt/sx); Hodos wallet = the Rust port (this loop). The two sides share the BOLT contracts + SPV + Arcade.
 
+## B1/B2 integration slice (user-directed 2026-06-16, post-loop)
+Goal: Hodos wallet mints an MSBBolt identity + sends an SPV proof that catpicz/bwanq `/identity/verify` accept. Contract (from `spv-demo-wapps/test/demo.e2e-spec.ts`): wallet mints identity NFT to user pubKeyHash, gets `{beefHex}`, POSTs `{beef}` -> sites return `{pubKeyHash}` / `{alreadyRegistered}`.
+- [x] MSBBolt mint-lock derivation (Hodos `8e55482`)
+- [x] **Live signing** `bolt/sign.rs` (Hodos `927d6d0`): BIP143 preimage (scriptCode=lock, post-codeseparator excludes ad68) + secp256k1 sign/verify; validated against the sim's real tx1 sig.
+- [x] **Full mint TX build+sign** `bolt/mint.rs` (Hodos `98bee44`): build_msbbolt_mint -> [P2PKH funding -> bolt out(1 sat) + change], funding sig via validated bolt::ctx/sign; rawTxHex+txid. 21 bolt tests.
+- [ ] **BEEF production** for the mint (reuse `beef.rs`) -> beefHex.
+- [ ] **/bolt handler (E) + provider (F)** to expose mint+proof.
+- [ ] **Acceptance vs the apps** `/identity/verify`. **DECISION NEEDED: cross-process SPV approach** - the wallet's beef must verify at catpicz which uses its own ChainTracker. Options: (C) hermetic - generate a synthetic BUMP matching the apps' StubChainTracker (offline, default); (B) local regtest shared; (A) live ttn Arcade (funded key + network). Recommend (C) first.
+
 ## Backlog
 
 ### Track A - Chain infra (parallel with Track B)
