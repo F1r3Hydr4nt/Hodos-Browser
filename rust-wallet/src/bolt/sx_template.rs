@@ -109,6 +109,41 @@ pub fn fill_script(
     Ok(out)
 }
 
+/// Parse a script into its data pushes in order (skipping non-push opcodes).
+/// Used to decompose a bolt lock script into its leading data args.
+pub fn parse_data_pushes(script: &[u8]) -> Vec<Vec<u8>> {
+    let mut out = Vec::new();
+    let mut i = 0usize;
+    while i < script.len() {
+        let op = script[i];
+        i += 1;
+        if op == 0x00 {
+            out.push(Vec::new());
+        } else if (0x01..=0x4b).contains(&op) {
+            let n = op as usize;
+            if i + n > script.len() { break; }
+            out.push(script[i..i + n].to_vec());
+            i += n;
+        } else if op == 0x4c {
+            if i >= script.len() { break; }
+            let n = script[i] as usize; i += 1;
+            if i + n > script.len() { break; }
+            out.push(script[i..i + n].to_vec()); i += n;
+        } else if op == 0x4d {
+            if i + 2 > script.len() { break; }
+            let n = script[i] as usize | ((script[i + 1] as usize) << 8); i += 2;
+            if i + n > script.len() { break; }
+            out.push(script[i..i + n].to_vec()); i += n;
+        } else if (0x51..=0x60).contains(&op) {
+            out.push(vec![op - 0x50]); // OP_1..OP_16
+        } else if op == 0x4f {
+            out.push(vec![0x81]); // OP_1NEGATE
+        }
+        // else: a non-push opcode (script body) - skip, keep scanning for pushes
+    }
+    out
+}
+
 /// Fill an artifact's locking recombinants with the given lockArg values (by name).
 pub fn fill_locking_script(
     art: &Artifact,

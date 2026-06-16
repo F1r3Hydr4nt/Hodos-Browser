@@ -118,6 +118,78 @@ pub fn simple_spend_unlock_args(
     m
 }
 
+/// The ancestor tx pieces needed to reconstruct the 26 ancestor* unlock args
+/// (ported from boltLib.ts getAncestorPiece). The ancestor is `prevTxs[idx-3]`
+/// and these are its own decomposition: its struct fields, its vin0 unlock args,
+/// the lock it spent, its bolt output lock, and its vin1 (funding) script.
+pub struct AncestorTx<'a> {
+    pub version: &'a [u8],
+    pub locktime: &'a [u8],
+    pub vin1_outpoint: &'a [u8],
+    pub vin1_sequence: &'a [u8],
+    pub vin2_outpoint: &'a [u8],
+    pub vin2_sequence: &'a [u8],
+    pub vin2_script: &'a [u8],
+    pub fund_outpoint: &'a [u8],
+    pub change_output: &'a [u8], // wire: value(8) ++ varint(scriptLen) ++ script
+    pub beneficiary_pkh: &'a [u8],
+    pub sig: &'a [u8],
+    pub pub_key: &'a [u8],
+    pub ctx_header: &'a [u8],
+    pub ctx_footer: &'a [u8],
+    pub spent_lock: &'a [u8], // the bolt lock the ancestor spent (its ctxCodeLockScriptCode)
+    pub out0_lock: &'a [u8],  // the ancestor's bolt output lock
+}
+
+/// Reconstruct the 26 ancestor* unlock args from the ancestor tx (boltLib
+/// getAncestorPiece). Only used when `idx % 2 == 0 && idx > 2` (the settle-tx
+/// case); ancestor-less spends leave these empty.
+pub fn ancestor_unlock_args(anc: &AncestorTx) -> HashMap<String, Vec<u8>> {
+    use crate::bolt::sx_template::parse_data_pushes;
+    let spent = parse_data_pushes(anc.spent_lock); // [pubKeyHash,commitment,txoType,parent,grandparent,issuer,..]
+    let vout = parse_data_pushes(anc.out0_lock);
+    let arg = |i: usize, v: &[Vec<u8>]| v.get(i).cloned().unwrap_or_default();
+
+    // ancestorChange = ancestor's change output (value8 ++ varint ++ script)
+    let (change_value, change_script): (Vec<u8>, Vec<u8>) = if anc.change_output.len() >= 9 {
+        let value = anc.change_output[0..8].to_vec();
+        // varint is 1 byte for these P2PKH scripts (len 25 < 0xfd)
+        let script = anc.change_output[9..].to_vec();
+        (value, script)
+    } else {
+        (Vec::new(), Vec::new())
+    };
+
+    let mut m = HashMap::new();
+    m.insert("ancestorVer".into(), anc.version.to_vec());
+    m.insert("ancestorVin1Outpoint".into(), anc.vin1_outpoint.to_vec());
+    m.insert("ancestorVin1FundOutpoint".into(), anc.fund_outpoint.to_vec());
+    m.insert("ancestorVin1ChangeOutput".into(), anc.change_output.to_vec());
+    m.insert("ancestorVin1BeneficiaryPubKeyHash".into(), anc.beneficiary_pkh.to_vec());
+    m.insert("ancestorVin1Sig".into(), anc.sig.to_vec());
+    m.insert("ancestorVin1PubKey".into(), anc.pub_key.to_vec());
+    m.insert("ancestorVin1CTXHeader".into(), anc.ctx_header.to_vec());
+    m.insert("ancestorVin1CTXScriptCodePubKeyHash".into(), arg(0, &spent));
+    m.insert("ancestorVin1CTXScriptCodePubKeyHashCommitment".into(), arg(1, &spent));
+    m.insert("ancestorVin1CTXScriptCodeTxoType".into(), arg(2, &spent));
+    m.insert("ancestorVin1CTXScriptCodeParentOutpoint".into(), arg(3, &spent));
+    m.insert("ancestorVin1CTXScriptCodeGrandparentOutpoint".into(), arg(4, &spent));
+    m.insert("ancestorVin1CTXFooter".into(), anc.ctx_footer.to_vec());
+    m.insert("ancestorVin1NSequence".into(), anc.vin1_sequence.to_vec());
+    m.insert("ancestorVin2Outpoint".into(), anc.vin2_outpoint.to_vec());
+    m.insert("ancestorVin2Script".into(), anc.vin2_script.to_vec());
+    m.insert("ancestorVin2NSequence".into(), anc.vin2_sequence.to_vec());
+    m.insert("ancestorVout1PubKeyHash".into(), arg(0, &vout));
+    m.insert("ancestorVout1PubKeyHashCommitment".into(), arg(1, &vout));
+    m.insert("ancestorVout1TxoType".into(), arg(2, &vout));
+    m.insert("ancestorVout1ParentOutpoint".into(), arg(3, &vout));
+    m.insert("ancestorVout1GrandparentOutpoint".into(), arg(4, &vout));
+    m.insert("ancestorChangeValue".into(), change_value);
+    m.insert("ancestorChangeScript".into(), change_script);
+    m.insert("ancestorNLockTime".into(), anc.locktime.to_vec());
+    m
+}
+
 /// Melt unlock args: spend the bolt to a P2PKH (destroy the token). The melt
 /// branch needs only the owner's signature + pubkey; all other 35 unlock args
 /// are empty.
@@ -369,13 +441,66 @@ mod tests {
         assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "melt unlock mismatch");
     }
 
-    // NOTE (B-2 ancestor reconstruction - BLOCKED, see PROGRESS.md): the tx4
-    // ancestor* args do NOT reconstruct the immediate parent tx3. Evidence:
-    //   ancestorVin1Outpoint = 2f1f1995..c9:0  (a funding/genesis-era outpoint)
-    //     but tx3.inputs[0].outpoint = 94bcc238..d8:0
-    //   ancestorVout1TxoType = 0x21 (settle)
-    // The reconstructed ancestor follows BOLT's commit/settle lineage, not the
-    // direct parent. Deriving it requires reading the sx contract's ancestor
-    // reconstruction + the commit/settle tx semantics. Deferred; the ancestor-less
-    // spends (mint + tx1/2/3 transfers) are fully derived above.
+    /// B-2 ANCESTOR RECONSTRUCTION (crux, UNBLOCKED via boltLib getAncestorPiece):
+    /// for tx4 (idx=4, idx%2==0 && idx>2) the ancestor is prevTxs[idx-3] = tx1.
+    /// Derive the 26 ancestor* args from tx1's decomposition, merge tx4's own 11
+    /// args, and reproduce tx4's full bolt-input unlock byte-for-byte. This proves
+    /// the ancestor* args are DERIVED (not copied from tx4's fixture).
+    #[test]
+    fn tx4_full_unlock_with_derived_ancestors() {
+        const TX1: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx1.json");
+        const TX4: &str = include_str!("../../tests/fixtures/minsimplebolt_spend_tx4.json");
+        const LIFE: &str = include_str!("../../tests/fixtures/minsimplebolt_lifecycle.json");
+        let tx1: Value = serde_json::from_str(TX1).unwrap();
+        let tx4: Value = serde_json::from_str(TX4).unwrap();
+        let life: Value = serde_json::from_str(LIFE).unwrap();
+
+        // ancestor (tx1) pieces - owned so AncestorTx can borrow them
+        let u1 = &tx1["args"];
+        let s1 = &tx1["struct"];
+        let s1in = s1["inputs"].as_array().unwrap();
+        let version = dehex(&s1["version"]);
+        let locktime = dehex(&s1["locktime"]);
+        let vin1_outpoint = dehex(&s1in[0]["outpoint"]);
+        let vin1_sequence = dehex(&s1in[0]["sequence"]);
+        let vin2_outpoint = dehex(&s1in[1]["outpoint"]);
+        let vin2_sequence = dehex(&s1in[1]["sequence"]);
+        let vin2_script = dehex(&life["txs"][1]["ins"][1]["unlockHex"]); // tx1 funding input scriptSig
+        let fund_outpoint = dehex(&u1["fundOutpoint"]);
+        let change_output = dehex(&u1["changeOutput"]);
+        let beneficiary_pkh = dehex(&u1["beneficiaryPubKeyHash"]);
+        let sig = dehex(&u1["sig"]);
+        let pub_key = dehex(&u1["pubKey"]);
+        let ctx_header = dehex(&u1["ctxHeader"]);
+        let ctx_footer = dehex(&u1["ctxFooter"]);
+        let spent_lock = dehex(&u1["ctxCodeLockScriptCode"]); // the lock tx1 spent
+        let out0_lock = dehex(&life["txs"][1]["outs"][0]["lockHex"]); // tx1's bolt output lock
+
+        let anc = AncestorTx {
+            version: &version, locktime: &locktime,
+            vin1_outpoint: &vin1_outpoint, vin1_sequence: &vin1_sequence,
+            vin2_outpoint: &vin2_outpoint, vin2_sequence: &vin2_sequence, vin2_script: &vin2_script,
+            fund_outpoint: &fund_outpoint, change_output: &change_output, beneficiary_pkh: &beneficiary_pkh,
+            sig: &sig, pub_key: &pub_key, ctx_header: &ctx_header, ctx_footer: &ctx_footer,
+            spent_lock: &spent_lock, out0_lock: &out0_lock,
+        };
+        let mut args = ancestor_unlock_args(&anc);
+        assert_eq!(args.len(), 26, "26 ancestor* args derived");
+
+        // cross-check the derived ancestors against tx4's decoded values
+        let a4 = tx4["args"].as_object().unwrap();
+        for (k, v) in &args {
+            assert_eq!(hex::encode(v), a4[k].as_str().unwrap(), "derived ancestor {k}");
+        }
+
+        // merge tx4's own 11 (non-ancestor) args, then the full unlock must match
+        for (k, v) in a4 {
+            if !k.starts_with("ancestor") {
+                args.insert(k.clone(), dehex(v));
+            }
+        }
+        assert_eq!(args.len(), 37);
+        let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("fill");
+        assert_eq!(hex::encode(&built), tx4["unlockHex"].as_str().unwrap(), "tx4 full unlock with derived ancestors");
+    }
 }
