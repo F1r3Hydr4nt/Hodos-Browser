@@ -27,7 +27,7 @@ Drive Layers A to F to green (Layer G app tests are OUT OF SCOPE - apps do not e
 ### Track A - Chain infra (parallel with Track B)
 - [x] D-1 ChainBackend enum + from_name/from_opt/from_env resolves local-node/testnet/ttn/main/local-arcade (default local-node; typo never selects mainnet) + arcade base URLs + has_address_indexer + bolt_enabled. DONE Hodos `43bc86d`, 6/6 green. NOTE: Broadcaster/ProofSource/HeaderSource trait defs deferred into D-2/D-3 (kept D-1 to pure config resolution).
 - [x] D-2a node.rs: pure build_rpc_body + parse_rpc_response/parse_txid/parse_block_hashes (recorded responses incl. -26 reject) + thin NodeRpc (send_raw_transaction, generate_to_address). DONE Hodos `1624471`, 6/6 green (12/12 chain). Pattern: keep HTTP thin, unit-test the pure request-build/response-parse.
-- [ ] D-2b arcade.rs: broadcast POST /tx + error-mapping test [D-1]
+- [x] D-2b arcade.rs: pure build_submit_url + parse_submit_response (202 submitted/already-submitted, 400 Rejected(reason), 503 Backpressure, other Unexpected) + thin ArcadeClient octet-stream broadcast. DONE Hodos `3d37d93`, 7/7 green (19/19 chain).
 - [ ] D-3 proof: node getrawtransaction/mined-confirmation AND arcade get_tx_status BUMP merklePath fed to beef.rs - test [D-1]
 - [ ] D-4 route existing broadcast/proof/height through ChainBackend; gate WoC UTXO on has_address_indexer [D-2a,D-2b,D-3]
 - [ ] D-5 self-track outputs + POST /wallet/import-funding - test [D-4]
@@ -58,3 +58,4 @@ Every box ticked AND suites A, A', B, C, D, E, F green AND no Layer-G artifact c
 - 2026-06-16 env bring-up complete (rustup + Windows SDK + vsenv shims); branched bolt-integration in both repos; PROGRESS seeded.
 - 2026-06-16 Aprime-1 GREEN (7/7): production artifacts frozen + LF-pinned in priv-chain (`22c8260`). Next eligible: D-1 (Track A) or B-0 (needs Aprime-1, embeds artifacts into rust-wallet).
 - 2026-06-16 D-1 GREEN (6/6): ChainBackend module in rust-wallet (`43bc86d`); first Rust code + cargo test proven in-loop (~36s cold build). Next eligible: B-0 (sx_template filler, critical path) or D-2a/D-2b (need only D-1).
+- 2026-06-16 D-2a GREEN (`1624471`) + D-2b GREEN (`3d37d93`): node + arcade broadcasters, 19/19 chain. Next eligible: D-3 (proof sources) then D-4/D-5, and B-0 (critical-path engine) in Track B.
