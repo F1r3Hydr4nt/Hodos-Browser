@@ -26,7 +26,7 @@ Drive Layers A to F to green (Layer G app tests are OUT OF SCOPE - apps do not e
 
 ### Track A - Chain infra (parallel with Track B)
 - [x] D-1 ChainBackend enum + from_name/from_opt/from_env resolves local-node/testnet/ttn/main/local-arcade (default local-node; typo never selects mainnet) + arcade base URLs + has_address_indexer + bolt_enabled. DONE Hodos `43bc86d`, 6/6 green. NOTE: Broadcaster/ProofSource/HeaderSource trait defs deferred into D-2/D-3 (kept D-1 to pure config resolution).
-- [ ] D-2a node.rs (default): SV-node RPC sendrawtransaction + generatetoaddress + recorded-response test [D-1]
+- [x] D-2a node.rs: pure build_rpc_body + parse_rpc_response/parse_txid/parse_block_hashes (recorded responses incl. -26 reject) + thin NodeRpc (send_raw_transaction, generate_to_address). DONE Hodos `1624471`, 6/6 green (12/12 chain). Pattern: keep HTTP thin, unit-test the pure request-build/response-parse.
 - [ ] D-2b arcade.rs: broadcast POST /tx + error-mapping test [D-1]
 - [ ] D-3 proof: node getrawtransaction/mined-confirmation AND arcade get_tx_status BUMP merklePath fed to beef.rs - test [D-1]
 - [ ] D-4 route existing broadcast/proof/height through ChainBackend; gate WoC UTXO on has_address_indexer [D-2a,D-2b,D-3]
