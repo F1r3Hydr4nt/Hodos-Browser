@@ -6,7 +6,11 @@
 
 use std::collections::HashMap;
 
-use super::lib::hash160;
+use super::lib::{hash160, varint};
+use super::sx_template::{fill_locking_script, min_simple_bolt};
+
+/// MinSimpleBolt's unlock scriptCode suffix (OP_CHECKSIGVERIFY OP_ENDIF).
+const UNLOCK_SCRIPT_CODE: [u8; 2] = [0xad, 0x68];
 
 /// Genesis mint lockArgs for a self-issued MinSimpleBolt owned by `owner_pubkey`
 /// (33-byte compressed). Issuer == owner; commitment + parent/grandparent
@@ -22,10 +26,40 @@ pub fn mint_lock_args(owner_pubkey: &[u8]) -> HashMap<String, Vec<u8>> {
     m
 }
 
+/// Derive the contract-static (tx-independent) unlock args for spending a
+/// MinSimpleBolt output owned by `owner_pubkey`, when the spent output is a
+/// GENESIS mint (all `ancestor*` args empty). The tx-dependent args
+/// (ctxHeader/ctxFooter/sig/fundOutpoint/changeOutput) come from the spend-tx
+/// BIP143 preimage builder (B-2-unlock-tx) and are NOT set here.
+pub fn genesis_spend_static_unlock_args(owner_pubkey: &[u8]) -> HashMap<String, Vec<u8>> {
+    let mut m = HashMap::new();
+
+    // all ancestor* args are empty when spending a genesis output
+    for name in &min_simple_bolt().unlock_args {
+        if name.starts_with("ancestor") {
+            m.insert(name.clone(), Vec::new());
+        }
+    }
+
+    // the spent output's scriptCode IS this contract's locking script (the mint lock)
+    let lock = fill_locking_script(&min_simple_bolt(), &mint_lock_args(owner_pubkey))
+        .expect("mint lock for scriptCode");
+
+    m.insert("pubKey".to_string(), owner_pubkey.to_vec());
+    m.insert("ctxCodeLockLen".to_string(), varint(lock.len()));
+    m.insert("ctxCodeLockScriptCode".to_string(), lock.clone());
+    m.insert("ctxCodeUnlockScriptCode".to_string(), UNLOCK_SCRIPT_CODE.to_vec());
+    m.insert(
+        "ctxCodeLen".to_string(),
+        varint(lock.len() + UNLOCK_SCRIPT_CODE.len()),
+    );
+    m
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::bolt::sx_template::{fill_locking_script, fill_unlocking_script, min_simple_bolt};
+    use crate::bolt::sx_template::fill_unlocking_script;
     use serde_json::Value;
 
     fn args_map_from_fixture(args_obj: &serde_json::Map<String, Value>) -> HashMap<String, Vec<u8>> {
@@ -77,5 +111,28 @@ mod tests {
 
         let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("unlock fill");
         assert_eq!(hex::encode(&built), expected, "tx1 unlock assembly mismatch");
+    }
+
+    /// B-2-unlock-derive: the contract-static unlock args derived from the owner
+    /// key match the fixture (all ancestor* empty for a genesis spend; pubKey,
+    /// the two length varints, the unlock scriptCode suffix, and crucially
+    /// ctxCodeLockScriptCode == the mint lock we build).
+    #[test]
+    fn genesis_spend_static_args_match_fixture() {
+        const OWNER_PUBKEY: &str =
+            "035f9b0b33eb636964205e77e71b5243552c2e4665be1e7ef1b6925211fd1bc0f7";
+        let owner = hex::decode(OWNER_PUBKEY).unwrap();
+        let derived = genesis_spend_static_unlock_args(&owner);
+
+        const UNLOCK: &str = include_str!("../../tests/fixtures/minsimplebolt_unlock_tx1.json");
+        let fx: Value = serde_json::from_str(UNLOCK).unwrap();
+        let fxargs = fx["args"].as_object().unwrap();
+
+        for (name, val) in &derived {
+            let exp = fxargs.get(name).unwrap_or_else(|| panic!("fixture missing arg {name}"));
+            assert_eq!(hex::encode(val), exp.as_str().unwrap(), "static unlock arg {name} mismatch");
+        }
+        // 26 ancestor* (empty) + 5 contract-static derived
+        assert_eq!(derived.len(), 26 + 5, "expected 31 contract-static args");
     }
 }
