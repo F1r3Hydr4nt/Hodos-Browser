@@ -58,6 +58,33 @@ The **Playwright E2E** that walks B1→B7 across the four sites is the top-level
 
 ---
 
+## Execution Gantt (drive to Layers A–F green; app tests excluded)
+
+Three tracks. **Track A (chain infra)** and **Track B (contract engine)** start in parallel; **Track C (wallet surface)** joins once the chain backend and the contract ports it needs are green. The Layer-G app tests are intentionally **not** on this chart. Units are relative working-sessions, not calendar dates.
+
+```mermaid
+gantt
+    title BOLT support integration — to Layers A–F green
+    dateFormat X
+    axisFormat %s
+    section Track A · Chain infra
+    P0 ChainBackend + Arcade (Layer D)       :a0, 0, 3
+    section Track B · Contract engine
+    P1 sx engine + golden harness (A′,B)     :b1, 0, 4
+    P2 MinSimpleBolt + MSBBolt (B,C)         :b2, after b1, 3
+    P3 SimpleMultiBolt (B,C)                 :b3, after b2, 4
+    P4 MinSimpleDiscountBolt (B,C)           :b4, after b2, 2
+    section Track C · Wallet surface
+    P5a /bolt handlers + SPV (Layer E)       :c1, after a0 b3 b4, 3
+    P5b Provider API + stub harness (Layer F):c2, after c1, 3
+    section Gate
+    Layers A–F green (loop stop)             :milestone, m1, after c2, 0
+```
+
+**Critical path:** P1 → P2 → P3 → P5a → P5b → gate. P0 (Track A) and P4 run off the critical path and absorb slack. Deferred Track G (real sites + B1→B7) attaches after the gate, only when the apps exist.
+
+---
+
 ## TDD workflow
 
 For every phase: **(1) Red** — add the failing test(s) named below; **(2) Green** — implement the minimum to pass; **(3) Refactor** — clean up, keep green. No production code without a failing test first. The golden-vector harness (Phase 1) is the backbone: a ported op is "done" only when its locking script, unlocking script, and txid are **byte-identical** to known-good `ts-bolt` output.
@@ -80,6 +107,53 @@ Tests are layered A→G. Layers **A–C are anchored on the 7 production contrac
 | **G — Real-site + E2E** ⛔ DEFERRED (apps) | per-site contract tests; `bolt-demo/test/demo.pw.ts` | each real site performs its beat; B1→B7 acceptance on `ttn` | — | 6–7 |
 
 **Interim green bar (no apps): A, A′, B, C, D, E, F all pass.** Layer G is the final acceptance once the apps exist.
+
+---
+
+## Ralph-loop to completion (Layers A–F; app tests excluded)
+
+Drive the backlog below autonomously with the **`ralph-loop:ralph-loop`** skill. The loop owns one mutable state file, `development-docs/BOLT/PROGRESS.md` (seeded from this backlog on first run); each iteration ticks exactly one box.
+
+**Loop goal (the prompt the loop repeats):**
+> "Open `development-docs/BOLT/PROGRESS.md`. Pick the first unchecked, unblocked task whose dependencies are all checked. Write its failing test first (Red), implement the minimum to pass (Green), run that task's layer suite, then commit and tick the box. Stop when every box is ticked and Layers A,A′,B,C,D,E,F are all green. Never create or touch Layer-G (real-site / Playwright) work."
+
+**Per-iteration protocol:** select next eligible task → **Red** (add the named failing test) → **Green** (implement) → run the layer suite (`cargo test bolt_golden|bolt_forgery`, `chain::*`, `npx jest production`, etc.) → `git commit` (one per green task) → tick the box in `PROGRESS.md`.
+
+**Backlog (ordered; dependencies in brackets):**
+
+*Track A · Chain infra (parallel with Track B)*
+- [ ] **D-1** `ChainBackend` enum + `from_settings` resolves `main/ttn/testnet/local` (+ `HODOS_CHAIN` env) — unit test
+- [ ] **D-2** `arcade::broadcast` (`POST /tx`, octet-stream) + recorded-response & error-mapping test [D-1]
+- [ ] **D-3** `arcade::get_tx_status` → BUMP `merklePath`, fed to `beef.rs` — test [D-1]
+- [ ] **D-4** route existing broadcast/proof/height through `ChainBackend`; gate WoC UTXO on `has_address_indexer` [D-2,D-3]
+- [ ] **D-5** self-track outputs + `POST /wallet/import-funding` — test [D-4]
+
+*Track B · Contract engine*
+- [ ] **A′-1** `artifactExport.test.js` freezes the 7 compiled artifacts → `rust-wallet/src/bolt/artifacts/*.json` (gated by `productionStd.equiv`/`productionDrift`)
+- [ ] **B-0** `sx_template.rs` filler + `lib.rs` boltLib helpers; MinSimpleBolt **lock-script** golden match [A′-1]
+- [ ] **B-1** `emit-golden.mjs` emits lifecycle fixtures (MinSimpleBolt, MSBBolt, SimpleMultiBolt, Discount) [A′-1]
+- [ ] **B-2** MinSimpleBolt mint/transfer/melt — golden byte-match [B-0,B-1]
+- [ ] **B-3** MinSimpleBalanceBolt (MSBBolt) mint/transfer/self-transfer — golden byte-match [B-2]
+- [ ] **C-1** MinSimpleBolt + MSBBolt forgery parity (`verifyTx` rejects) [B-3]
+- [ ] **B-4** SimpleMultiBolt mint/transfer/split/merge/melt — golden byte-match [B-3]
+- [ ] **C-2** SimpleMultiBolt forgery parity [B-4]
+- [ ] **B-5** MinSimpleDiscountBolt mint/transfer/melt — golden byte-match [B-3]
+- [ ] **C-3** Discount forgery parity [B-5]
+
+*Track C · Wallet surface [needs D-4 + B-4 + B-5]*
+- [ ] **E-1** `/bolt/{mint,transfer,melt,receive}` handlers per contract + tests
+- [ ] **E-2** `GET /bolt/proof/:id` BEEF export verifies via `smb-payments`
+- [ ] **F-1** inject `window.hodosBrowser.bolt.*` + domain-perm routing — test
+- [ ] **F-2** `bolt-demo/stub/` page drives the full provider loop — test
+- [ ] **F-3** auto-register/account binding + toasts; `useBolt.ts` + `TokensTab.tsx`
+
+**Completion gate (loop stop):** every box ticked **and** suites `A, A′, B, C, D, E, F` green **and** no Layer-G artifact created.
+
+**Guardrails (hard stops for the loop):**
+1. Branch off `main` before the first commit; commit per green task; **never push** without explicit approval.
+2. **Pause for a human** before editing `crypto/`/signing/derivation or any DB schema/migration (Hodos invariants 2–3).
+3. If a task can't go green in ≤N attempts, mark it `BLOCKED: <first byte-diff>` in `PROGRESS.md` (use the `depthTable`/`wireDiff` byte-diff method from the existing `smb_*` suites) and move to the next independent task.
+4. Out of scope: real demo sites, issuer backends, Playwright (`bolt-demo/test/demo.pw.ts`) — the loop must not create these.
 
 ---
 
