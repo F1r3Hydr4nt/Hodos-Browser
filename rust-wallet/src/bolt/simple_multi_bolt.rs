@@ -110,41 +110,44 @@ mod tests {
     /// ctxHeader/ctxFooter derived via bolt::ctx; also cross-checks the fixture
     /// sig verifies against the assembled preimage (scriptCode = lock).
     #[test]
-    fn transfer_unlock_matches_fixture() {
+    fn transfer_unlock_matches_fixtures() {
         const TX1: &str = include_str!("../../tests/fixtures/smb_spend_tx1.json");
-        let fx: Value = serde_json::from_str(TX1).unwrap();
-        let st = &fx["struct"];
-        let ua = fx["args"].as_object().unwrap();
+        const TX3: &str = include_str!("../../tests/fixtures/smb_spend_tx3.json");
+        for (label, raw) in [("tx1", TX1), ("tx3", TX3)] {
+            let fx: Value = serde_json::from_str(raw).unwrap();
+            let st = &fx["struct"];
+            let ua = fx["args"].as_object().unwrap();
 
-        let owner = dehex(&ua["pubKey"]);
-        let spent_lock = dehex(&st["spentLockScript"]);
+            let owner = dehex(&ua["pubKey"]);
+            let spent_lock = dehex(&st["spentLockScript"]);
 
-        let inputs = st["inputs"].as_array().unwrap();
-        let outpoints: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["outpoint"])).collect();
-        let sequences: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["sequence"])).collect();
-        let outputs_raw: Vec<(Vec<u8>, Vec<u8>)> = st["outputs"].as_array().unwrap().iter()
-            .map(|o| (dehex(&o["value"]), dehex(&o["script"]))).collect();
-        let bolt_idx = st["boltInputIndex"].as_u64().unwrap() as usize;
+            let inputs = st["inputs"].as_array().unwrap();
+            let outpoints: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["outpoint"])).collect();
+            let sequences: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["sequence"])).collect();
+            let outputs_raw: Vec<(Vec<u8>, Vec<u8>)> = st["outputs"].as_array().unwrap().iter()
+                .map(|o| (dehex(&o["value"]), dehex(&o["script"]))).collect();
+            let bolt_idx = st["boltInputIndex"].as_u64().unwrap() as usize;
 
-        let header = ctx_header(&dehex(&st["version"]), &hash_prevouts(&outpoints),
-            &hash_sequence(&sequences), &outpoints[bolt_idx]);
-        let footer = ctx_footer(&dehex(&st["spentValue"]), &sequences[bolt_idx],
-            &hash_outputs(&outputs_raw), &dehex(&st["locktime"]), &dehex(&st["sighashType"]));
+            let header = ctx_header(&dehex(&st["version"]), &hash_prevouts(&outpoints),
+                &hash_sequence(&sequences), &outpoints[bolt_idx]);
+            let footer = ctx_footer(&dehex(&st["spentValue"]), &sequences[bolt_idx],
+                &hash_outputs(&outputs_raw), &dehex(&st["locktime"]), &dehex(&st["sighashType"]));
 
-        // sig cross-check: scriptCode = the spent lock only (post-codeseparator)
-        let preimage = build_preimage(&header, &spent_lock, &footer);
-        assert!(
-            verify_sig(&dehex(&ua["sig"]), &preimage_sighash(&preimage), &owner).unwrap(),
-            "SMB tx1 sig verifies against assembled preimage"
-        );
+            // sig cross-check: scriptCode = the spent lock only (post-codeseparator)
+            let preimage = build_preimage(&header, &spent_lock, &footer);
+            assert!(
+                verify_sig(&dehex(&ua["sig"]), &preimage_sighash(&preimage), &owner).unwrap(),
+                "{label} sig verifies against assembled preimage"
+            );
 
-        let fund_outpoint = outpoints[1 - bolt_idx].clone();
-        let args = transfer_unlock_args(
-            &owner, &spent_lock, &fund_outpoint, &dehex(&ua["changeOutput"]),
-            &dehex(&ua["pubKeyHash1"]), &dehex(&ua["nextTxoType"]), &dehex(&ua["inputIndexN"]),
-            &header, &footer, &dehex(&ua["sig"]),
-        );
-        let built = fill_unlocking_script(&simple_multi_bolt(), &args).expect("fill");
-        assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "SMB tx1 transfer unlock mismatch");
+            let fund_outpoint = outpoints[1 - bolt_idx].clone();
+            let args = transfer_unlock_args(
+                &owner, &spent_lock, &fund_outpoint, &dehex(&ua["changeOutput"]),
+                &dehex(&ua["pubKeyHash1"]), &dehex(&ua["nextTxoType"]), &dehex(&ua["inputIndexN"]),
+                &header, &footer, &dehex(&ua["sig"]),
+            );
+            let built = fill_unlocking_script(&simple_multi_bolt(), &args).expect("fill");
+            assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "{label} SMB transfer unlock mismatch");
+        }
     }
 }
