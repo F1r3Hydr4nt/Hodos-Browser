@@ -25,7 +25,7 @@ Drive Layers A to F to green (Layer G app tests are OUT OF SCOPE - apps do not e
 ## Backlog
 
 ### Track A - Chain infra (parallel with Track B)
-- [ ] D-1 ChainBackend enum + from_settings resolves local-node/testnet/ttn/main (+ HODOS_CHAIN); Broadcaster/ProofSource/HeaderSource traits - unit test
+- [x] D-1 ChainBackend enum + from_name/from_opt/from_env resolves local-node/testnet/ttn/main/local-arcade (default local-node; typo never selects mainnet) + arcade base URLs + has_address_indexer + bolt_enabled. DONE Hodos `43bc86d`, 6/6 green. NOTE: Broadcaster/ProofSource/HeaderSource trait defs deferred into D-2/D-3 (kept D-1 to pure config resolution).
 - [ ] D-2a node.rs (default): SV-node RPC sendrawtransaction + generatetoaddress + recorded-response test [D-1]
 - [ ] D-2b arcade.rs: broadcast POST /tx + error-mapping test [D-1]
 - [ ] D-3 proof: node getrawtransaction/mined-confirmation AND arcade get_tx_status BUMP merklePath fed to beef.rs - test [D-1]
@@ -57,3 +57,4 @@ Every box ticked AND suites A, A', B, C, D, E, F green AND no Layer-G artifact c
 ## Log
 - 2026-06-16 env bring-up complete (rustup + Windows SDK + vsenv shims); branched bolt-integration in both repos; PROGRESS seeded.
 - 2026-06-16 Aprime-1 GREEN (7/7): production artifacts frozen + LF-pinned in priv-chain (`22c8260`). Next eligible: D-1 (Track A) or B-0 (needs Aprime-1, embeds artifacts into rust-wallet).
+- 2026-06-16 D-1 GREEN (6/6): ChainBackend module in rust-wallet (`43bc86d`); first Rust code + cargo test proven in-loop (~36s cold build). Next eligible: B-0 (sx_template filler, critical path) or D-2a/D-2b (need only D-1).
