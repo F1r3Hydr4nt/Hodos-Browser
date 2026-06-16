@@ -56,9 +56,36 @@ pub fn genesis_spend_static_unlock_args(owner_pubkey: &[u8]) -> HashMap<String, 
     m
 }
 
+/// Full unlock args for spending a GENESIS MinSimpleBolt output. Combines the
+/// contract-static args (derived from `owner_pubkey`) with the per-spend args
+/// the wallet supplies from its constructed spend tx: the funding outpoint, the
+/// change output (wire-serialized), the beneficiary pubKeyHash (send target),
+/// the BIP143 ctxHeader/ctxFooter (from bolt::ctx over the spend tx), and the
+/// signature over the preimage.
+#[allow(clippy::too_many_arguments)]
+pub fn genesis_spend_unlock_args(
+    owner_pubkey: &[u8],
+    fund_outpoint: &[u8],
+    change_output: &[u8],
+    beneficiary_pkh: &[u8],
+    ctx_header: &[u8],
+    ctx_footer: &[u8],
+    sig: &[u8],
+) -> HashMap<String, Vec<u8>> {
+    let mut m = genesis_spend_static_unlock_args(owner_pubkey);
+    m.insert("fundOutpoint".to_string(), fund_outpoint.to_vec());
+    m.insert("changeOutput".to_string(), change_output.to_vec());
+    m.insert("beneficiaryPubKeyHash".to_string(), beneficiary_pkh.to_vec());
+    m.insert("ctxHeader".to_string(), ctx_header.to_vec());
+    m.insert("ctxFooter".to_string(), ctx_footer.to_vec());
+    m.insert("sig".to_string(), sig.to_vec());
+    m
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::bolt::ctx::{ctx_footer, ctx_header, hash_outputs, hash_prevouts, hash_sequence};
     use crate::bolt::sx_template::fill_unlocking_script;
     use serde_json::Value;
 
@@ -134,5 +161,85 @@ mod tests {
         }
         // 26 ancestor* (empty) + 5 contract-static derived
         assert_eq!(derived.len(), 26 + 5, "expected 31 contract-static args");
+    }
+
+    fn dehex(v: &Value) -> Vec<u8> {
+        let s = v.as_str().unwrap();
+        if s.is_empty() { Vec::new() } else { hex::decode(s).unwrap() }
+    }
+
+    /// B-2 genesis-spend COMPLETE: assemble all 37 unlock args from derivation +
+    /// the spend-tx structure (+ injected sig) and reproduce tx1's bolt-input
+    /// unlock byte-for-byte. fundOutpoint/changeOutput/beneficiaryPubKeyHash are
+    /// derived from the tx structure; ctxHeader/ctxFooter from bolt::ctx; sig is
+    /// the fixture's (needs the owner privkey to produce in a live build).
+    #[test]
+    fn genesis_spend_full_unlock_matches_fixture() {
+        const OWNER: &str = "035f9b0b33eb636964205e77e71b5243552c2e4665be1e7ef1b6925211fd1bc0f7";
+        let owner = hex::decode(OWNER).unwrap();
+
+        const STRUCT: &str = include_str!("../../tests/fixtures/minsimplebolt_tx1_struct.json");
+        const UNLOCK: &str = include_str!("../../tests/fixtures/minsimplebolt_unlock_tx1.json");
+        let st: Value = serde_json::from_str(STRUCT).unwrap();
+        let un: Value = serde_json::from_str(UNLOCK).unwrap();
+        let ua = un["args"].as_object().unwrap();
+
+        // BIP143 ctx from the spend-tx structure
+        let inputs = st["inputs"].as_array().unwrap();
+        let outpoints: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["outpoint"])).collect();
+        let sequences: Vec<Vec<u8>> = inputs.iter().map(|i| dehex(&i["sequence"])).collect();
+        let outputs_raw: Vec<(Vec<u8>, Vec<u8>)> = st["outputs"].as_array().unwrap().iter()
+            .map(|o| (dehex(&o["value"]), dehex(&o["script"]))).collect();
+        let bolt_idx = st["boltInputIndex"].as_u64().unwrap() as usize;
+
+        let header = ctx_header(
+            &dehex(&st["version"]),
+            &hash_prevouts(&outpoints),
+            &hash_sequence(&sequences),
+            &outpoints[bolt_idx],
+        );
+        let footer = ctx_footer(
+            &dehex(&st["spentValue"]),
+            &sequences[bolt_idx],
+            &hash_outputs(&outputs_raw),
+            &dehex(&st["locktime"]),
+            &dehex(&st["sighashType"]),
+        );
+
+        // fundOutpoint = the non-bolt (funding) input's outpoint
+        let fund_outpoint = outpoints[1 - bolt_idx].clone();
+
+        // changeOutput = the output paying back to the owner's P2PKH (wire-serialized)
+        let owner_p2pkh = {
+            let mut s = vec![0x76, 0xa9, 0x14];
+            s.extend_from_slice(&hash160(&owner));
+            s.extend_from_slice(&[0x88, 0xac]);
+            s
+        };
+        let change_output = outputs_raw.iter()
+            .find(|(_, script)| *script == owner_p2pkh)
+            .map(|(value, script)| {
+                let mut o = value.clone();
+                o.extend_from_slice(&varint(script.len()));
+                o.extend_from_slice(script);
+                o
+            })
+            .expect("owner change output present");
+
+        // beneficiary + sig are spend parameters (sig needs the privkey to produce)
+        let beneficiary_pkh = dehex(&un["args"]["beneficiaryPubKeyHash"]);
+        let sig = dehex(&un["args"]["sig"]);
+
+        let args = genesis_spend_unlock_args(
+            &owner, &fund_outpoint, &change_output, &beneficiary_pkh, &header, &footer, &sig,
+        );
+        assert_eq!(args.len(), 37, "all 37 unlock args present");
+
+        // independent cross-checks of the derived (non-injected) args
+        assert_eq!(hex::encode(&fund_outpoint), ua["fundOutpoint"].as_str().unwrap());
+        assert_eq!(hex::encode(&change_output), ua["changeOutput"].as_str().unwrap());
+
+        let built = fill_unlocking_script(&min_simple_bolt(), &args).expect("unlock fill");
+        assert_eq!(hex::encode(&built), un["unlockHex"].as_str().unwrap(), "full genesis unlock mismatch");
     }
 }
