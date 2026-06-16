@@ -5,6 +5,7 @@
 //! sx simulator's `processRecombinants`. Per-contract arg builders + golden
 //! byte-match tests land in B-2..C-3.
 
+pub mod ctx;
 pub mod lib;
 pub mod min_simple_bolt;
 pub mod sx_template;
