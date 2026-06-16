@@ -150,4 +150,35 @@ mod tests {
             assert_eq!(hex::encode(&built), fx["unlockHex"].as_str().unwrap(), "{label} SMB transfer unlock mismatch");
         }
     }
+
+    /// B-4 merge (2-bolt-input swap/merge, tx5): the engine fills the full 198-arg
+    /// unlocking layout for BOTH bolt inputs byte-for-byte. Each input is ancestor-
+    /// less (185 ancestor* args empty) with merge-specific interop*/nextBalanceCommit/
+    /// inputIndexN populated. This proves the filler assembles the 2-input merge
+    /// layout given the decoded args (deriving interop*/nextBalanceCommit from the
+    /// two input tokens is the remaining fungible-merge wallet work).
+    #[test]
+    fn merge_unlock_matches_fixture_tx5() {
+        const MERGE: &str = include_str!("../../tests/fixtures/smb_merge_tx5.json");
+        let fx: Value = serde_json::from_str(MERGE).unwrap();
+        let art = simple_multi_bolt();
+        let bolt_inputs = fx["boltInputs"].as_array().unwrap();
+        assert_eq!(bolt_inputs.len(), 2, "tx5 has two bolt inputs (merge)");
+
+        for bi in bolt_inputs {
+            let vin = bi["vin"].as_u64().unwrap();
+            let ua = bi["args"].as_object().unwrap();
+            let mut args: HashMap<String, Vec<u8>> = HashMap::new();
+            for name in &art.unlock_args {
+                let v = ua.get(name).map(dehex).unwrap_or_default();
+                args.insert(name.clone(), v);
+            }
+            let built = fill_unlocking_script(&art, &args).expect("fill");
+            assert_eq!(
+                hex::encode(&built),
+                bi["unlockHex"].as_str().unwrap(),
+                "SMB merge unlock mismatch for bolt input vin {vin}"
+            );
+        }
+    }
 }
