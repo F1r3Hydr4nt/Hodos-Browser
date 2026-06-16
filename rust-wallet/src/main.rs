@@ -4,6 +4,7 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 
 mod arc_status;  // Centralized ARC miner response status classification
+mod chain;  // ChainBackend: runtime-selectable chain access (BOLT Layer D)
 mod json_storage;
 mod action_storage;  // NEW: Action storage module
 mod handlers;
