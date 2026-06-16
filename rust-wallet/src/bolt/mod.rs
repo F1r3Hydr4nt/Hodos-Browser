@@ -9,4 +9,5 @@ pub mod ctx;
 pub mod lib;
 pub mod min_simple_bolt;
 pub mod msbbolt;
+pub mod sign;
 pub mod sx_template;
