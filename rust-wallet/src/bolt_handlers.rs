@@ -36,16 +36,45 @@ fn demo_identity_pubkey() -> Vec<u8> {
     PublicKey::from_secret_key(&secp, &sk).serialize().to_vec()
 }
 
-/// Build (sign) a MinSimpleBolt identity mint owned by the wallet's demo identity key,
-/// seed-funded (hermetic; the mint is proven by the chain service's synthetic BUMP).
-pub fn build_demo_identity_mint() -> Result<IdentityMintResponse, String> {
+/// A real funding UTXO the demo identity key controls (regtest/testnet). `txid` is the
+/// standard display txid (the wallet reverses it for the wire prevout).
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FundingInput {
+    pub txid: String,
+    pub vout: u32,
+    pub value: i64,
+}
+
+#[derive(Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MintReqBody {
+    /// When present, the mint spends this real UTXO (regtest). Absent → hermetic seed funding.
+    pub funding: Option<FundingInput>,
+}
+
+/// Build (sign) a MinSimpleBolt identity mint owned by the wallet's demo identity key. With a
+/// `funding_override` it spends a REAL UTXO (regtest broadcast); without, it uses the hermetic
+/// seed outpoint (proven by the chain service's synthetic BUMP).
+pub fn build_demo_identity_mint(
+    funding_override: Option<FundingInput>,
+) -> Result<IdentityMintResponse, String> {
     let pk = demo_identity_pubkey();
-    let funding = Funding {
-        txid: "11".repeat(32),
-        vout: 0,
-        value: 100_000,
-        priv_key: DEMO_IDENTITY_SK,
-        pub_key: pk.clone(),
+    let funding = match funding_override {
+        Some(f) => Funding {
+            txid: f.txid,
+            vout: f.vout,
+            value: f.value,
+            priv_key: DEMO_IDENTITY_SK,
+            pub_key: pk.clone(),
+        },
+        None => Funding {
+            txid: "11".repeat(32),
+            vout: 0,
+            value: 100_000,
+            priv_key: DEMO_IDENTITY_SK,
+            pub_key: pk.clone(),
+        },
     };
     let r = build_min_simple_bolt_mint(&pk, &funding, 200)?;
     Ok(IdentityMintResponse {
@@ -58,8 +87,20 @@ pub fn build_demo_identity_mint() -> Result<IdentityMintResponse, String> {
 }
 
 /// POST /bolt/identity/mint — mint the identity NFT, return the signed raw tx for proving.
-pub async fn bolt_identity_mint() -> HttpResponse {
-    match build_demo_identity_mint() {
+/// Optional JSON body `{ "funding": {txid,vout,value} }` for a real UTXO (empty body → seed).
+pub async fn bolt_identity_mint(body: web::Bytes) -> HttpResponse {
+    let funding = if body.is_empty() {
+        None
+    } else {
+        match serde_json::from_slice::<MintReqBody>(&body) {
+            Ok(b) => b.funding,
+            Err(e) => {
+                return HttpResponse::BadRequest()
+                    .json(serde_json::json!({ "error": format!("bad request body: {e}") }))
+            }
+        }
+    };
+    match build_demo_identity_mint(funding) {
         Ok(resp) => HttpResponse::Ok().json(resp),
         Err(e) => HttpResponse::InternalServerError().json(serde_json::json!({ "error": e })),
     }
@@ -160,7 +201,7 @@ mod tests {
 
     #[test]
     fn demo_identity_mint_is_minsimplebolt_owned_by_demo_key() {
-        let r = build_demo_identity_mint().unwrap();
+        let r = build_demo_identity_mint(None).unwrap();
         assert_eq!(r.contract, "MinSimpleBolt");
         assert_eq!(r.txid.len(), 64);
         // owner pkh matches the committed b1 fixture identity and is embedded in the lock
