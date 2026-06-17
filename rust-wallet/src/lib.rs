@@ -5,6 +5,7 @@
 
 pub mod arc_status;
 pub mod bolt;
+pub mod bolt_handlers;  // BOLT token HTTP endpoints (Layer E); also in main.rs
 pub mod chain;
 pub mod crypto;
 pub mod certificate;

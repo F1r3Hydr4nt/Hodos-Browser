@@ -9,6 +9,7 @@ mod chain;  // ChainBackend: runtime-selectable chain access (BOLT Layer D)
 mod json_storage;
 mod action_storage;  // NEW: Action storage module
 mod handlers;
+mod bolt_handlers;  // BOLT token HTTP endpoints (Layer E); also in lib.rs for tests
 mod crypto;
 mod transaction;
 mod utxo_fetcher;
@@ -730,15 +731,24 @@ async fn main() -> std::io::Result<()> {
 
     // Start HTTP server with graceful shutdown support (Phase 8D)
     let server = HttpServer::new(move || {
-        // CORS: Only allow requests from our own frontend origins.
-        // In production, CEF intercepts wallet requests at the C++ layer before they
-        // reach Rust — CORS here is defense-in-depth against any bypass.
-        // Website JS uses window.hodosBrowser.* (V8 IPC), never direct fetch to :31301.
+        // CORS: allow our own frontend origins. In production, CEF intercepts wallet requests
+        // at the C++ layer before they reach Rust — CORS here is defense-in-depth.
+        // The BOLT demo sites (spv-demo-wapps on :3001-3004) drive /bolt/* directly from the
+        // page (CEF passes non-wallet-endpoint :31301 requests straight through to the wallet),
+        // so their localhost origins are allowlisted here.
         let cors = Cors::default()
             .allowed_origin("http://127.0.0.1:5137")
             .allowed_origin("http://localhost:5137")
             .allowed_origin("http://127.0.0.1")
             .allowed_origin("http://localhost")
+            .allowed_origin("http://localhost:3001")
+            .allowed_origin("http://127.0.0.1:3001")
+            .allowed_origin("http://localhost:3002")
+            .allowed_origin("http://127.0.0.1:3002")
+            .allowed_origin("http://localhost:3003")
+            .allowed_origin("http://127.0.0.1:3003")
+            .allowed_origin("http://localhost:3004")
+            .allowed_origin("http://127.0.0.1:3004")
             .allow_any_method()
             .allow_any_header()
             .max_age(3600);
@@ -799,6 +809,10 @@ async fn main() -> std::io::Result<()> {
             .route("/listOutputs", web::post().to(handlers::list_outputs))  // Group C - Part 1
             .route("/relinquishOutput", web::post().to(handlers::relinquish_output))  // Group C - Part 1
             .route("/wallet/tokens", web::get().to(handlers::list_token_outputs))  // Token list for wallet UI
+            .route("/bolt/identity/mint", web::post().to(bolt_handlers::bolt_identity_mint))  // BOLT Layer E: self-issue identity NFT
+            .route("/bolt/identity", web::get().to(bolt_handlers::bolt_identity))  // BOLT Layer E: demo identity pubkey
+            .route("/bolt/pay", web::post().to(bolt_handlers::bolt_pay))  // BOLT Layer E: SMB IRP payment (B5)
+            .route("/bolt/sign", web::post().to(bolt_handlers::bolt_sign))  // BOLT Layer E: sign offer message (B7)
 
             // Part 2: Blockchain Queries
             .route("/getHeight", web::post().to(handlers::get_height))  // Group C - Part 2
