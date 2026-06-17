@@ -38,7 +38,7 @@ fn demo_identity_pubkey() -> Vec<u8> {
 
 /// A real funding UTXO the demo identity key controls (regtest/testnet). `txid` is the
 /// standard display txid (the wallet reverses it for the wire prevout).
-#[derive(Deserialize)]
+#[derive(Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct FundingInput {
     pub txid: String,
@@ -121,6 +121,7 @@ pub async fn bolt_identity() -> HttpResponse {
 pub struct PayRequest {
     pub pay_to_pub_key_hex: String,
     pub amount: u64, // minor units (pennies)
+    pub funding: Option<FundingInput>,
 }
 
 #[derive(Serialize)]
@@ -136,19 +137,32 @@ pub struct PayResponse {
 /// Build a SimpleMultiBolt payment of `amount` pennies owned by `pay_to_pub_key_hex` (the
 /// merchant), funded by the wallet's demo identity key. Models paying from an IRP balance —
 /// the demo bank mints SMB the same way; verified by the site under `lineage:'skip'` SPV.
-pub fn build_demo_payment(pay_to_pub_key_hex: &str, amount: u64) -> Result<PayResponse, String> {
+pub fn build_demo_payment(
+    pay_to_pub_key_hex: &str,
+    amount: u64,
+    funding_override: Option<FundingInput>,
+) -> Result<PayResponse, String> {
     let pay_to = hex::decode(pay_to_pub_key_hex).map_err(|e| format!("payToPubKeyHex: {e}"))?;
     if pay_to.len() != 33 {
         return Err("payToPubKeyHex must be a 33-byte compressed pubkey".into());
     }
     let balance = (amount as u128).to_le_bytes().to_vec(); // 16-byte LE (matches amount16)
     let funder_pk = demo_identity_pubkey();
-    let funding = Funding {
-        txid: "22".repeat(32),
-        vout: 0,
-        value: 1_000_000,
-        priv_key: DEMO_IDENTITY_SK,
-        pub_key: funder_pk,
+    let funding = match funding_override {
+        Some(f) => Funding {
+            txid: f.txid,
+            vout: f.vout,
+            value: f.value,
+            priv_key: DEMO_IDENTITY_SK,
+            pub_key: funder_pk,
+        },
+        None => Funding {
+            txid: "22".repeat(32),
+            vout: 0,
+            value: 1_000_000,
+            priv_key: DEMO_IDENTITY_SK,
+            pub_key: funder_pk,
+        },
     };
     let r = build_smb_mint(&pay_to, &balance, &funding, 200)?;
     Ok(PayResponse {
@@ -162,7 +176,7 @@ pub fn build_demo_payment(pay_to_pub_key_hex: &str, amount: u64) -> Result<PayRe
 
 /// POST /bolt/pay {payToPubKeyHex, amount} — mint an SMB payment, return its raw tx.
 pub async fn bolt_pay(body: web::Json<PayRequest>) -> HttpResponse {
-    match build_demo_payment(&body.pay_to_pub_key_hex, body.amount) {
+    match build_demo_payment(&body.pay_to_pub_key_hex, body.amount, body.funding.clone()) {
         Ok(resp) => HttpResponse::Ok().json(resp),
         Err(e) => HttpResponse::BadRequest().json(serde_json::json!({ "error": e })),
     }
@@ -212,7 +226,7 @@ mod tests {
     #[test]
     fn demo_payment_is_smb_owned_by_payee() {
         let merchant = format!("02{}", "ab".repeat(32)); // 33-byte compressed pubkey shape
-        let r = build_demo_payment(&merchant, 4500).unwrap();
+        let r = build_demo_payment(&merchant, 4500, None).unwrap();
         assert_eq!(r.contract, "SimpleMultiBolt");
         assert_eq!(r.amount, 4500);
         assert_eq!(r.txid.len(), 64);
