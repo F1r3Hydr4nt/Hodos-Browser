@@ -749,6 +749,11 @@ async fn main() -> std::io::Result<()> {
             .allowed_origin("http://127.0.0.1:3003")
             .allowed_origin("http://localhost:3004")
             .allowed_origin("http://127.0.0.1:3004")
+            // BOLT demo hostnames (Caddy reverse proxy on :80 + hosts entries -> 127.0.0.1)
+            .allowed_origin("http://catpicz.xyz")
+            .allowed_origin("http://bwanq.xxx")
+            .allowed_origin("http://tackle.new")
+            .allowed_origin("http://bucket.shop")
             .allow_any_method()
             .allow_any_header()
             .max_age(3600);
