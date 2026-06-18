@@ -16,9 +16,16 @@
   setting, then launch a fresh instance. The wapp pages call the integrated
   Hodos wallet directly at 127.0.0.1:31301/bolt/* (CORS-allowed).
 
-  Usage:   pwsh -File .\open-hodos-wapps-demo.ps1
-           (or right-click > Run with PowerShell)
+  Usage:   pwsh -File .\open-hodos-wapps-demo.ps1            # hermetic (default)
+           pwsh -File .\open-hodos-wapps-demo.ps1 -Regtest   # local SV node (real chain)
+           # teratestnet (set the funded source + Arcade first):
+           $env:ARCADE_URL='https://<arcade>'; $env:FUNDING_WIF='<wif>'; $env:FUNDING_OUTPOINT='<txid:vout:value>'
+           pwsh -File .\open-hodos-wapps-demo.ps1 -Testnet
 #>
+param(
+  [switch]$Regtest,   # demo against the LOCAL regtest SV node (real chain, no external deps)
+  [switch]$Testnet    # demo against teratestnet via Arcade (needs ARCADE_URL + FUNDING_WIF + FUNDING_OUTPOINT)
+)
 
 $ErrorActionPreference = 'Continue'
 $env:HODOS_DEV = '1'   # wallet + CEF dev-mode: data -> %APPDATA%\HodosBrowserDev
@@ -49,11 +56,40 @@ function Stat([string]$url) { if (Test-Up $url) { 'UP' } else { 'DOWN' } }
 
 Write-Host '== BOLT demo: bringing up the background stack ==' -ForegroundColor Cyan
 
-# 1) Docker: demo sites (3001-3004) + shared chain service (3010)
-if (-not (Test-Up 'http://localhost:3001')) {
-  Write-Host '   -> docker compose up -d (sites + chain + proxy)...'
-  Push-Location $WAPPS; docker compose up -d | Out-Null; Pop-Location
-  Wait-Up 'http://localhost:3001' 150 | Out-Null
+# ---- chain backend: default hermetic | -Regtest (local SV node) | -Testnet (ttn Arcade) ----
+$composeArgs = @('up', '-d')
+$bringUpNode = $false
+if ($Regtest) {
+  $env:CHAIN_BACKEND = 'local'
+  $env:RPC_HOST = 'host.docker.internal'; $env:RPC_PORT = '18332'
+  $env:RPC_USERNAME = 'bitcoin'; $env:RPC_PASSWORD = 'lololol'
+  $composeArgs = @('up', '-d', '--build'); $bringUpNode = $true
+  Write-Host '   mode: REGTEST — local SV node, real broadcast/mine/BUMP/SPV' -ForegroundColor Yellow
+} elseif ($Testnet) {
+  if (-not $env:ARCADE_URL -or -not $env:FUNDING_WIF -or -not $env:FUNDING_OUTPOINT) {
+    Write-Host '   !! -Testnet needs ARCADE_URL + FUNDING_WIF + FUNDING_OUTPOINT env set first' -ForegroundColor Red
+    return
+  }
+  $env:CHAIN_BACKEND = 'ttn'
+  $composeArgs = @('up', '-d', '--build')
+  Write-Host '   mode: TESTNET (ttn) — Arcade broadcast + headers, pool-funded mints' -ForegroundColor Yellow
+} else {
+  $env:CHAIN_BACKEND = 'shared'
+  Write-Host '   mode: hermetic (default)'
+}
+
+# Regtest: bring up the local SV node (repo-root compose) so sites/chain can reach it.
+if ($bringUpNode) {
+  Write-Host '   -> regtest node (docker compose up -d node @ repo root)...'
+  Push-Location (Join-Path $HODOS '..'); docker compose up -d node | Out-Null; Pop-Location
+}
+
+# 1) Docker: demo sites (3001-3004) + shared chain service (3010). A net switch forces --build
+# (so the chain image ships the latest /funding) and a restart even if the stack is already up.
+if ($Regtest -or $Testnet -or -not (Test-Up 'http://localhost:3001')) {
+  Write-Host ("   -> docker compose {0} (sites + chain + proxy)..." -f ($composeArgs -join ' '))
+  Push-Location $WAPPS; docker compose @composeArgs | Out-Null; Pop-Location
+  Wait-Up 'http://localhost:3001' 180 | Out-Null
 }
 Write-Host ("   sites    : {0}" -f (Stat 'http://localhost:3001'))
 Write-Host ("   chain    : {0}" -f (Stat 'http://localhost:3010/health'))
