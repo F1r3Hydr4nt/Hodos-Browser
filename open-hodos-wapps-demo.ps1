@@ -9,6 +9,7 @@
       bwanq    http://localhost:3002   (bank / IRP loan)
       tackle   http://localhost:3003   (shop / coupons)
       bucket   http://localhost:3004   (exchange / coupon sale)
+      explorer http://localhost:3005   (woc-explorer; -Regtest only — browse every tx by txid)
 
   How the tabs work: Hodos reads <profile>/session.json on a fresh start
   (gated by browser.restoreSessionOnStart) and recreates each saved tab in one
@@ -42,6 +43,8 @@ $sites = @(
   @{ name = 'tackle';  url = 'http://localhost:3003' },
   @{ name = 'bucket';  url = 'http://localhost:3004' }
 )
+# Regtest has a real chain, so bring up the woc-explorer (RPC-backed) and open it as a 5th tab.
+if ($Regtest) { $sites += @{ name = 'explorer'; url = 'http://localhost:3005' } }
 
 function Test-Up([string]$url) {
   try { return (Invoke-WebRequest $url -TimeoutSec 3 -UseBasicParsing).StatusCode -ge 200 }
@@ -78,10 +81,12 @@ if ($Regtest) {
   Write-Host '   mode: hermetic (default)'
 }
 
-# Regtest: bring up the local SV node (repo-root compose) so sites/chain can reach it.
+# Regtest: bring up the local SV node + woc-explorer (repo-root compose) so sites/chain can reach
+# the node and you can browse every tx at localhost:3005. (Builds the explorer image on first run.)
 if ($bringUpNode) {
-  Write-Host '   -> regtest node (docker compose up -d node @ repo root)...'
-  Push-Location (Join-Path $HODOS '..'); docker compose up -d node | Out-Null; Pop-Location
+  Write-Host '   -> regtest node + woc-explorer (docker compose up -d @ repo root)...'
+  Push-Location (Join-Path $HODOS '..'); docker compose up -d node woc-explorer | Out-Null; Pop-Location
+  Wait-Up 'http://localhost:3005' 120 | Out-Null
 }
 
 # 1) Docker: demo sites (3001-3004) + shared chain service (3010). A net switch forces --build
@@ -93,6 +98,7 @@ if ($Regtest -or $Testnet -or -not (Test-Up 'http://localhost:3001')) {
 }
 Write-Host ("   sites    : {0}" -f (Stat 'http://localhost:3001'))
 Write-Host ("   chain    : {0}" -f (Stat 'http://localhost:3010/health'))
+if ($Regtest) { Write-Host ("   explorer : {0}  (http://localhost:3005)" -f (Stat 'http://localhost:3005')) }
 
 # 2) Integrated Hodos wallet (:31301, HODOS_DEV dev data dir)
 if (-not (Test-Up 'http://127.0.0.1:31301/bolt/identity')) {
@@ -208,3 +214,8 @@ if ($win) {
 Write-Host ''
 Write-Host 'Done. Hodos opened with catpicz / bwanq / tackle / bucket as tabs.' -ForegroundColor Green
 Write-Host 'Walk: catpicz "Sign in" -> bwanq verify+loan -> tackle member+claim+buy -> bucket list 5% coupon.'
+if ($Regtest) {
+  Write-Host 'Explorer tab open at http://localhost:3005 — open DevTools console to see every [BOLT tx]' -ForegroundColor Green
+  Write-Host '(txid + clickable explorer link) as you click. Or auto-run it (headed, records video):' -ForegroundColor Green
+  Write-Host '  $env:PW_HEADED=1; $env:PW_SLOWMO=600; $env:PW_VIDEO=1; npm --prefix ..\spv-demo-wapps run test:browser:regtest' -ForegroundColor DarkGray
+}
