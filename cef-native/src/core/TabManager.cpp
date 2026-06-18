@@ -297,6 +297,22 @@ bool TabManager::SwitchToTab(int tab_id) {
     active_tab_per_window_[target_window] = tab_id;
     LOG(INFO) << "Switched to tab " << tab_id << " (URL: " << tab.url << ")";
 
+#ifdef _WIN32
+    // Re-layout to the CURRENT window size. SwitchToTab otherwise only shows the
+    // tab without resizing it, so a tab whose HWND ended up a stale width (e.g. from
+    // the async WM_SIZE race during multi-tab session restore, or a maximize while
+    // it was hidden) stays the wrong width — making centered page content look
+    // off-centre. Reuse the WM_SIZE path (it resizes every tab to the live client
+    // rect), exactly as CreateTab does after creating a tab.
+    BrowserWindow* ownerWin = WindowManager::GetInstance().GetWindow(target_window);
+    if (ownerWin && ownerWin->hwnd && IsWindow(ownerWin->hwnd)) {
+        RECT pr;
+        GetClientRect(ownerWin->hwnd, &pr);
+        PostMessage(ownerWin->hwnd, WM_SIZE, SIZE_RESTORED,
+                    MAKELPARAM(pr.right - pr.left, pr.bottom - pr.top));
+    }
+#endif
+
     return true;
 }
 
